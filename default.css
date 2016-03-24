@@ -1,0 +1,30 @@
+html.recolor-enabled, html.recolor-enabled > body, html.recolor-enabled > body > div {
+    background-color: rgba(40,44,52,1) !important;
+}
+
+/*html.recolor-enabled, html.recolor-enabled *:not([aria-hidden=true]):not(.noBgColor):not(.withBgImage):not(img) {
+    background-color: rgba(40,44,52,1) !important;
+}*/
+
+html.recolor-enabled * {
+    color: #ABB2BF !important;
+    border-color: #464A54 !important;
+    box-shadow: none !important;
+}
+
+html.recolor-enabled ::selection {
+    background: rgba(142,142,142,0.3) !important;
+}
+
+html.recolor-enabled a:link {
+    color: #769EC1 !important;
+}
+
+html.recolor-enabled a:visited {
+    color: #C18176 !important;
+}
+
+html.recolor-enabled img, html.recolor-enabled .withBgImage {
+    background-color: rgba(0,0,0,0) !important;
+    -webkit-filter: brightness(80%) contrast(120%) !important;
+}
