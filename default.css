@@ -1,10 +1,6 @@
-html.recolor-enabled, html.recolor-enabled > body, html.recolor-enabled > body > div {
+html.recolor-enabled, html.recolor-enabled > body, html.recolor-enabled > body > *, html.recolor-enabled *:not([aria-hidden=true]).withBgColor:not(.withBgImage) {
     background-color: rgba(40,44,52,1) !important;
 }
-
-/*html.recolor-enabled, html.recolor-enabled *:not([aria-hidden=true]):not(.noBgColor):not(.withBgImage):not(img) {
-    background-color: rgba(40,44,52,1) !important;
-}*/
 
 html.recolor-enabled * {
     color: #ABB2BF !important;
@@ -26,5 +22,5 @@ html.recolor-enabled a:visited {
 
 html.recolor-enabled img, html.recolor-enabled .withBgImage {
     background-color: rgba(0,0,0,0) !important;
-    -webkit-filter: brightness(80%) contrast(120%) !important;
+    /*-webkit-filter: brightness(100%) contrast(100%) !important;*/
 }

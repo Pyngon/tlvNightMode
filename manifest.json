@@ -16,8 +16,15 @@
       },
 
     "permissions": [
-        "storage"
+        "storage",
+        "tabs",
+        "activeTab",
+        "<all_urls>"
     ],
+
+    "background": {
+        "scripts": ["background.js"]
+    },
 
     "content_scripts": [
         {
@@ -28,9 +35,15 @@
             "all_frames": true
         },
         {
-          "matches": ["<all_urls>"],
-          "js": ["changeColor.js"],
-          "all_frames": true
+            "matches": ["<all_urls>"],
+            "run_at": "document_end",
+            "js": ["changeColor.js"],
+            "all_frames": true
+        },
+        {
+            "matches": ["<all_urls>"],
+            "js": ["recover.js"],
+            "all_frames": true
         }
     ]
 }

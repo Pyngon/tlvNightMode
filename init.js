@@ -1,14 +1,21 @@
 var originalClass = document.documentElement.className;
 var originalColor = document.documentElement.style.color;
+var originalWebkitFilter = document.documentElement.style.webkitFilter;
 
 document.documentElement.className += " recolor-enabled";
 document.documentElement.style.color = "#ABB2BF";
+document.documentElement.style.webkitFilter = "brightness(40%)";
 
 chrome.storage.local.get("isEnabled", function(result){
     console.log("local.get=" + result["isEnabled"]);
     if(result["isEnabled"] == 0){
         document.documentElement.className = originalClass;
         document.documentElement.style.color = originalColor;
+        document.documentElement.style.webkitFilter = originalWebkitFilter;
+    } else {
+        chrome.runtime.sendMessage({action: "injectCSS"}, function(response) {
+            console.log(response.status);
+        });
     }
 });
 
@@ -28,6 +35,6 @@ chrome.runtime.onMessage.addListener(
         } else {
             disable();
         }
-        sendResponse({status: "ok"});
+        sendResponse({status: "ok1"});
     }
 );
