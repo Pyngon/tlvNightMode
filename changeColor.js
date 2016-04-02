@@ -1,3 +1,42 @@
+console.log("changeColor.js");
+
+var myOriginalClass;
+if(typeof originalClass !== "undefined"){
+    /* init.js is not injected */
+    console.log("originalClass exist");
+    myOriginalClass = originalClass;
+} else {
+    console.log("originalClass doesn't exist");
+    myOriginalClass = document.documentElement.className;
+}
+
+chrome.storage.local.get("isEnabled", function(result){
+    console.log("local.get=" + result["isEnabled"]);
+    if(result["isEnabled"] != 0 && !document.documentElement.className.includes("recolor-enabled")){
+        document.documentElement.className += " recolor-enabled";
+    }
+});
+
+function disable(){
+    document.documentElement.className = myOriginalClass;
+}
+
+function enable(){
+    document.documentElement.className += " recolor-enabled";
+}
+
+chrome.runtime.onMessage.addListener(
+    function(request, sender, sendResponse) {
+        console.log("received request=" + request.isEnable);
+        if (request.isEnable) {
+            enable();
+        } else {
+            disable();
+        }
+        sendResponse({status: "ok1"});
+    }
+);
+
 var pyngon = pyngon || {};
 
 pyngon.webColor = (function(){
@@ -45,28 +84,28 @@ pyngon.webColor = (function(){
     };
 
 })();
-console.log("changeColor.js");
-
-// console.log("length=" + document.styleSheets.length);
-// for(var i=0;i<document.styleSheets.length;i++){
-//     console.log(document.styleSheets[i]);
-// }
 
 pyngon.webColor.traceDOM(document.body);
 
-var nodeArray = [];
-var timeoutObj;
+var maxDepth = 20;
 observeBody(document.body);
 function observeBody(body){
     var bodyMutationObserver = new MutationObserver(function(records){
-        for(var i=0;i<records.length;i++){
-            if (records[i].type == "childList"){
-                for(var j=0;j<records[i].addedNodes.length;j++){
-                    analyzeAndModifyNode(records[i].addedNodes[j], true, 0);
+        chrome.storage.local.get("depth", function(result){
+            if(result){
+                console.log("depth result=" + result["depth"]);
+                maxDepth = result["depth"];
+            }
+            for(var i=0;i<records.length;i++){
+                if (records[i].type == "childList"){
+                    for(var j=0;j<records[i].addedNodes.length;j++){
+                        analyzeAndModifyNode(records[i].addedNodes[j], true, 0);
+                    }
                 }
             }
 
-        }
+        });
+
     });
     // var bodyInit = {childList: true, attributes: true, subtree: true, attributeOldValue: true, attributeFilter: ["class"]};
     var bodyInit = {childList: true, subtree: true};
@@ -74,9 +113,9 @@ function observeBody(body){
 }
 
 function analyzeAndModifyNode(node, checkChild, depth){
-    // if(depth > 20){
-    //     return;
-    // }
+    if(maxDepth && maxDepth > 0 && depth > maxDepth){
+        return;
+    }
 
     if(node && (!node.className || (!node.className.includes("noBgColor") && !node.className.includes("withBgColor") && !node.className.includes("withBgImage")))) {
 

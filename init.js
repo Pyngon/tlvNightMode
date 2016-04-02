@@ -19,22 +19,27 @@ chrome.storage.local.get("isEnabled", function(result){
     }
 });
 
-function disable(){
-    document.documentElement.className = originalClass;
-}
+// chrome.runtime.sendMessage({action: "injectCSS"}, function(response){
+//     console.log("injectCSS response=" + Object.keys(response));
+// });
 
-function enable(){
-    document.documentElement.className += " recolor-enabled";
-}
 
-chrome.runtime.onMessage.addListener(
-    function(request, sender, sendResponse) {
-        console.log("received request=" + request.isEnable);
-        if (request.isEnable) {
-            enable();
-        } else {
-            disable();
-        }
-        sendResponse({status: "ok1"});
-    }
-);
+// function disable(){
+//     document.documentElement.className = originalClass;
+// }
+//
+// function enable(){
+//     document.documentElement.className += " recolor-enabled";
+// }
+//
+// chrome.runtime.onMessage.addListener(
+//     function(request, sender, sendResponse) {
+//         console.log("received request=" + request.isEnable);
+//         if (request.isEnable) {
+//             enable();
+//         } else {
+//             disable();
+//         }
+//         sendResponse({status: "ok1"});
+//     }
+// );

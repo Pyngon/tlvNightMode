@@ -1,4 +1,5 @@
 if(document.documentElement.className.includes("recolor-enabled")){
+    // document.documentElement.style.color = originalColor;
     var brightenInterval = setInterval(function(){
         var filter = document.documentElement.style.webkitFilter;
         var brightness = /^brightness\(([\d]+)%\)/.exec(filter);

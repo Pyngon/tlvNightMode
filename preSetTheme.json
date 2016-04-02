@@ -1,19 +1,26 @@
 {
     "t1": {
+        "bgColor": "#282C34",
+        "textColor": "#ABB2BF",
+        "borderColor": "#464A54",
+        "linkColor": "#769EC1",
+        "visitedLinkColor": "#C18176"
+    },
+    "t2": {
         "bgColor": "#040404",
         "textColor": "#6E6E6E",
         "borderColor": "#3F3F3F",
         "linkColor": "#FFFFFF",
         "visitedLinkColor": "#E46A68"
     },
-    "t2": {
+    "t3": {
         "bgColor": "#141311",
         "textColor": "#B7B7B6",
         "borderColor": "#686766",
         "linkColor": "#FFFFFF",
         "visitedLinkColor": "#A2482E"
     },
-    "t3": {
+    "t4": {
         "bgColor": "#252120",
         "textColor": "#E5DFC5",
         "borderColor": "#91C7A9",
