@@ -7,7 +7,7 @@ xhr.onreadystatechange = function() {
         preSetThemes = JSON.parse(xhr.responseText);
     }
 };
-xhr.open('GET', chrome.extension.getURL('preSetTheme.json'), true);
+xhr.open('GET', chrome.extension.getURL('data/preSetTheme.json'), true);
 xhr.send();
 
 chrome.tabs.query({status: "complete"}, function(tabs){
