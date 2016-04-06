@@ -1,0 +1,10 @@
+#menuTheme {
+    position: relative;
+    left: 5px;
+    display: inline;
+}
+
+#menuTheme li {
+    display: inline;
+    margin: 5px;
+}
