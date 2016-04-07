@@ -7,24 +7,24 @@
         "visitedLinkColor": "#C18176"
     },
     "t2": {
-        "bgColor": "#040404",
-        "textColor": "#6E6E6E",
-        "borderColor": "#3F3F3F",
-        "linkColor": "#FFFFFF",
-        "visitedLinkColor": "#E46A68"
-    },
-    "t3": {
-        "bgColor": "#141311",
-        "textColor": "#B7B7B6",
-        "borderColor": "#686766",
-        "linkColor": "#FFFFFF",
-        "visitedLinkColor": "#A2482E"
-    },
-    "t4": {
         "bgColor": "#252120",
         "textColor": "#E5DFC5",
         "borderColor": "#91C7A9",
         "linkColor": "#B48375",
         "visitedLinkColor": "#A92F41"
+    },
+    "t3": {
+        "bgColor": "#151515",
+        "textColor": "#6A6A68",
+        "borderColor": "#FFFFFF",
+        "linkColor": "#87A85C",
+        "visitedLinkColor": "#43442B"
+    },
+    "t4": {
+        "bgColor": "181712",
+        "textColor": "#B0ABA0",
+        "borderColor": "#F0F0F0",
+        "linkColor": "#6ABEDB",
+        "visitedLinkColor": "#757571"
     }
 }

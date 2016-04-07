@@ -1,10 +1,127 @@
-#menuTheme {
-    position: relative;
-    left: 5px;
-    display: inline;
+body {
+    width: 290px;
+    background-color: #282C34;
+    color: #ABB2BF;
 }
 
-#menuTheme li {
-    display: inline;
+h2 {
+    padding: 0px;
+    margin: 0px;
+}
+
+a {
+    color: #769EC1;
+}
+
+.configGroup {
+    width: 100%;
+}
+
+.header, .header * {
+    display: inline-block;
+}
+
+.helpTips {
+    position: relative;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background-color: #484C54;
+    text-align: center;
+    line-height: 20px;
+    font-size: 12px;
+    cursor: default;
+}
+
+.helpTips:before {
+    content: "?";
+}
+
+.helpTips p {
+    display: none;
+    text-align: left;
+    width: 150px;
+    position: absolute;
+    background-color: #484C54;
+    padding-left: 10px;
+    padding-right: 10px;
+    z-index: 1;
+    box-shadow: 1px 1px 1px rgba(0,0,0,0.2);
+    border-radius: 3px;
+    top: 15px;
+}
+
+.helpTips:hover p {
+    display: block;
+}
+
+
+.helpTips p:before{ /* The pointer of the tooltip */
+	position: absolute;
+	content: '';
+	width:0;
+	height: 0;
+	border:6px solid transparent;
+	border-bottom-color:#484C54;
+	left:5px;
+	top: -12px;
+}
+
+.onoffswitch {
+    left: 200px;
+}
+
+.horizontalMenu {
+    position: relative;
+    left: 5px;
+    display: inline-block;
+    padding-left: 0px;
+    padding-top: 0px;
+}
+
+.horizontalMenu li {
+    display: inline-block;
     margin: 5px;
+}
+
+input.rangeValue {
+    width: 35px;
+}
+
+table tr td:first-child {
+    width: 80px;
+}
+
+table tr td {
+    padding-right: 10px;
+}
+
+.themeBlock {
+    position: relative;
+    width: 60px;
+    height: 40px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.themeContent {
+    position: relative;
+    width: 50px;
+    height: 25px;
+    line-height: 25px;
+    text-align: center;
+    font-size: 1.5em;
+    border-width: 2px;
+    border-style: solid;
+    margin: 0 auto;
+}
+
+.themeContent:hover {
+    box-shadow: 0 0 2px 1px white;
+}
+
+.themeName {
+    position: relative;
+    width: 30px;
+    margin: 0 auto;
 }

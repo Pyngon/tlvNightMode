@@ -1,43 +1,29 @@
-var KEY_ENABLED = "isEnabled";
-var KEY_THEME_ID = "theme";
-var KEY_BRIGHTNESS = "brightness";
-var KEY_CONTRAST = "contrast";
-var KEY_DEPTH = "depth";
-
-var valueEnabled = true;
-var valueBrightness = 100;
-var valueContrast = 100;
-var valueDepth = 20;
+// var KEY_ENABLED = "isEnabled";
+// var KEY_THEME_ID = "theme";
+// var KEY_BRIGHTNESS = "brightness";
+// var KEY_CONTRAST = "contrast";
+// var KEY_DEPTH = "depth";
+//
+// var MIN_BRIGHTNESS = 0;
+// var MAX_BRIGHTNESS = 200;
+// var MIN_CONTRAST = 0;
+// var MAX_CONTRAST = 200;
+// var MIN_DEPTH = 0;
+// var MAX_DEPTH = 0;
+//
+// var valueEnabled = true;
+// var valueBrightness = 100;
+// var valueContrast = 100;
+// var valueDepth = 20;
 // var currentThemeID = null;
 
 var bgPage = chrome.extension.getBackgroundPage();
 
-function saveToStorage(key, value){
-    var obj = {};
-    obj[key] = value;
-    chrome.storage.local.set(obj);
-}
-
-function enableFunction(evt){
-    chrome.storage.local.get(KEY_ENABLED, function(result){
-        console.log("local.get=" + result[KEY_ENABLED]);
-        if(result[KEY_ENABLED] != 0){
-            var obj = {};
-            obj[KEY_ENABLED] = 0;
-
-            chrome.storage.local.set(obj);
-            evt.target.innerHTML = "Disabled";
-            sendMessageToContentScript(false);
-        } else {
-            var obj = {};
-            obj[KEY_ENABLED] = 1;
-
-            chrome.storage.local.set(obj);
-            evt.target.innerHTML = "Enabled";
-            sendMessageToContentScript(true);
-        }
-    });
-}
+// function saveToStorage(key, value){
+//     var obj = {};
+//     obj[key] = value;
+//     chrome.storage.local.set(obj);
+// }
 
 function sendMessageToContentScript(isEnabled){
     chrome.tabs.query({status: "complete"}, function(tabs){
@@ -50,156 +36,264 @@ function sendMessageToContentScript(isEnabled){
     });
 }
 
+var brightnessTimer;
+var timer = {};
 /* page event */
-
 document.addEventListener("DOMContentLoaded", function(){
     var menu = document.getElementById("menuTheme");
     var item;
-    for(var i in chrome.extension.getBackgroundPage().preSetThemes){
-        item = document.createElement("li");
-        item.innerText = i;
-        item.id = i;
-        item.addEventListener("click", changeTheme);
+    for(var i in bgPage.preSetThemes){
+        item = renderThemeButton(i, bgPage.preSetThemes[i]);
         menu.appendChild(item);
     }
 
-    var btnEnable = document.getElementById("btnEnable");
-    btnEnable.addEventListener("click", enableFunction);
+    var chkbOnOff = document.getElementById("chkbOnOff");
+    if(bgPage.values[bgPage.KEY_ENABLED] != 0){
+        chkbOnOff.checked = true;
+    } else {
+        chkbOnOff.checked = false;
+    }
+    chkbOnOff.addEventListener("change", function(ev){
+        chrome.storage.local.get(bgPage.KEY_ENABLED, function(result){
+            console.log("local.get=" + result[bgPage.KEY_ENABLED]);
+
+            if(!ev.target.checked && result[bgPage.KEY_ENABLED] != 0){
+                bgPage.saveValue(bgPage.KEY_ENABLED, 0);
+                sendMessageToContentScript(false);
+            } else if(ev.target.checked && result[bgPage.KEY_ENABLED] == 0){
+                bgPage.saveValue(bgPage.KEY_ENABLED, 1);
+                sendMessageToContentScript(true);
+            }
+        });
+    });
 
     var sbBrightness = document.getElementById("sbBrightness");
     var txtBrightness = document.getElementById("txtBrightness");
-    sbBrightness.addEventListener("input", function(ev){
-        txtBrightness.innerText = ev.target.value;
-        valueBrightness = ev.target.value;
-        saveToStorage(KEY_BRIGHTNESS, valueBrightness);
+    setupImageConfiguration(sbBrightness, txtBrightness, bgPage.KEY_BRIGHTNESS, bgPage.MIN_BRIGHTNESS, bgPage.MAX_BRIGHTNESS);
+    // sbBrightness.value = bgPage.values[bgPage.KEY_BRIGHTNESS];
+    // txtBrightness.value = bgPage.values[bgPage.KEY_BRIGHTNESS];
+    // sbBrightness.addEventListener("input", function(ev){
+    //     txtBrightness.value = ev.target.value;
+    //
+    //     changeImageConfiguration(bgPage.KEY_BRIGHTNESS, ev.target.value);
+    //     // bgPage.saveValue(bgPage.KEY_BRIGHTNESS, ev.target.value);
+    //     // chrome.tabs.query({active: true}, function(tabs){
+    //     //     for(var i=0;i<tabs.length;i++) {
+    //     //         chrome.tabs.insertCSS(tabs[i].id, {
+    //     //             code: 'html.recolor-enabled img, html.recolor-enabled .withBgImage {-webkit-filter: brightness(' + bgPage.values[bgPage.KEY_BRIGHTNESS] + '%) contrast(' + bgPage.values[bgPage.KEY_CONTRAST] + '%) !important;}'
+    //     //         });
+    //     //     }
+    //     // });
+    // });
+    // txtBrightness.addEventListener("input", function(ev){
+    //     if(brightnessTimer){
+    //         clearTimeout(brightnessTimer);
+    //     }
+    //     brightnessTimer = setTimeout(function(){
+    //         var newValue = ev.target.value;
+    //         if(newValue < bgPage.MIN_BRIGHTNESS){
+    //             newValue = bgPage.MIN_BRIGHTNESS;
+    //             txtBrightness.value = newValue;
+    //         } else if(newValue > bgPage.MAX_BRIGHTNESS){
+    //             newValue = bgPage.MAX_BRIGHTNESS;
+    //             txtBrightness.value = newValue;
+    //         }
+    //         sbBrightness.value = newValue;
+    //
+    //         changeImageConfiguration(bgPage.KEY_BRIGHTNESS, newValue);
+    //         // bgPage.saveValue(bgPage.KEY_BRIGHTNESS, newValue);
+    //         // chrome.tabs.query({active: true}, function(tabs){
+    //         //     for(var i=0;i<tabs.length;i++) {
+    //         //         chrome.tabs.insertCSS(tabs[i].id, {
+    //         //             code: 'html.recolor-enabled img, html.recolor-enabled .withBgImage {-webkit-filter: brightness(' + bgPage.values[bgPage.KEY_BRIGHTNESS] + '%) contrast(' + bgPage.values[bgPage.KEY_CONTRAST] + '%) !important;}'
+    //         //         });
+    //         //     }
+    //         // });
+    //     }, 1000);
+    // });
 
-        chrome.tabs.query({active: true}, function(tabs){
-            for(var i=0;i<tabs.length;i++) {
-                chrome.tabs.insertCSS(tabs[i].id, {
-                    code: 'html.recolor-enabled img, html.recolor-enabled .withBgImage {-webkit-filter: brightness(' + valueBrightness + '%) contrast(' + valueContrast + '%) !important;}'
-                });
-            }
-        });
-    });
     var sbContrast = document.getElementById("sbContrast");
     var txtContrast = document.getElementById("txtContrast");
-    sbContrast.addEventListener("input", function(ev){
-        txtContrast.innerText = ev.target.value;
-        valueContrast = ev.target.value;
-        saveToStorage(KEY_CONTRAST, valueContrast);
+    setupImageConfiguration(sbContrast, txtContrast, bgPage.KEY_CONTRAST, bgPage.MIN_CONTRAST, bgPage.MAX_CONTRAST);
+    // sbContrast.value = bgPage.values[bgPage.KEY_CONTRAST];
+    // txtContrast.value = bgPage.values[bgPage.KEY_CONTRAST];
+    // sbContrast.addEventListener("input", function(ev){
+    //     txtContrast.value = ev.target.value;
+    //     valueContrast = ev.target.value;
+    //     bgPage.saveValue(bgPage.KEY_CONTRAST, valueContrast);
+    //
+    //     chrome.tabs.query({active: true}, function(tabs){
+    //         for(var i=0;i<tabs.length;i++) {
+    //             chrome.tabs.insertCSS(tabs[i].id, {
+    //                 code: 'html.recolor-enabled img, html.recolor-enabled .withBgImage {-webkit-filter: brightness(' + bgPage.values[bgPage.KEY_BRIGHTNESS] + '%) contrast(' + valueContrast + '%) !important;}'
+    //             });
+    //         }
+    //     });
+    // });
 
-        chrome.tabs.query({active: true}, function(tabs){
-            for(var i=0;i<tabs.length;i++) {
-                chrome.tabs.insertCSS(tabs[i].id, {
-                    code: 'html.recolor-enabled img, html.recolor-enabled .withBgImage {-webkit-filter: brightness(' + valueBrightness + '%) contrast(' + valueContrast + '%) !important;}'
-                });
-            }
-        });
-    });
     var sbDepth = document.getElementById("sbDepth");
     var txtDepth = document.getElementById("txtDepth");
+    sbDepth.value = bgPage.values[bgPage.KEY_DEPTH];
+    txtDepth.value = bgPage.values[bgPage.KEY_DEPTH];
+
     sbDepth.addEventListener("input", function(ev){
-        txtDepth.innerText = ev.target.value;
-        valueDepth = ev.target.value;
-        saveToStorage(KEY_DEPTH, valueDepth);
+        txtDepth.value = ev.target.value;
+        // valueDepth = ev.target.value;
+        bgPage.saveValue(bgPage.KEY_DEPTH, ev.target.value);
+    });
+    txtDepth.addEventListener("input", function(ev){
+        if(timer[bgPage.KEY_DEPTH]){
+            clearTimeout(timer[bgPage.KEY_DEPTH]);
+        }
+        timer[bgPage.KEY_DEPTH] = setTimeout(function(){
+            var newValue = ev.target.value;
+            if(newValue < bgPage.MIN_DEPTH){
+                newValue = bgPage.MIN_DEPTH;
+                txtDepth.value = newValue;
+            } else if(newValue > bgPage.MAX_DEPTH){
+                newValue = bgPage.MAX_DEPTH;
+                txtDepth.value = newValue;
+            }
+            sbDepth.value = newValue;
+            bgPage.saveValue(bgPage.KEY_DEPTH, ev.target.value);
+        }, 500);
     });
 
-    chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, KEY_THEME_ID], function(result){
-        if(result[KEY_ENABLED] != 0){
-            btnEnable.innerHTML = "Enabled";
+    var linkAdvance = document.getElementById("linkAdvance");
+    linkAdvance.addEventListener("click", function(ev){
+        console.log(ev.target.innerText);
+        var blockAdvance = document.getElementById("blockAdvance");
+        if(blockAdvance.style.display != "none"){
+            blockAdvance.style.display = "none";
+            ev.target.innerText = "Show Advance Settings"
         } else {
-            btnEnable.innerHTML = "Disabled";
+            blockAdvance.style.display = "block";
+            ev.target.innerText = "Hide Advance Settings"
         }
-
-        if(result[KEY_BRIGHTNESS] != null){
-            valueBrightness = result[KEY_BRIGHTNESS];
-            sbBrightness.value = result[KEY_BRIGHTNESS];
-            txtBrightness.innerText = result[KEY_BRIGHTNESS];
-        }
-
-        if(result[KEY_CONTRAST] != null){
-            valueContrast = result[KEY_CONTRAST];
-            sbContrast.value = result[KEY_CONTRAST];
-            txtContrast.innerText = result[KEY_CONTRAST];
-        }
-
-        if(result[KEY_DEPTH] != null){
-            valueContrast = result[KEY_DEPTH];
-            sbDepth.value = result[KEY_DEPTH];
-            txtDepth.innerText = result[KEY_DEPTH];
-        }
-
-        bgPage.currentThemeID = result[KEY_THEME_ID];
     });
+
+    // chrome.storage.local.get([bgPage.KEY_BRIGHTNESS, bgPage.KEY_CONTRAST, bgPage.KEY_ENABLED, bgPage.KEY_DEPTH, bgPage.KEY_THEME_ID], function(result){
+    //     if(result[bgPage.KEY_ENABLED] != 0){
+    //         // btnEnable.innerHTML = "Enabled";
+    //         chkbOnOff.checked = true;
+    //     } else {
+    //         // btnEnable.innerHTML = "Disabled";
+    //         chkbOnOff.checked = false;
+    //     }
+    //
+    //     if(result[bgPage.KEY_BRIGHTNESS] != null){
+    //         valueBrightness = result[bgPage.KEY_BRIGHTNESS];
+    //         sbBrightness.value = result[bgPage.KEY_BRIGHTNESS];
+    //         txtBrightness.value = result[bgPage.KEY_BRIGHTNESS];
+    //     }
+    //
+    //     if(result[bgPage.KEY_CONTRAST] != null){
+    //         valueContrast = result[bgPage.KEY_CONTRAST];
+    //         sbContrast.value = result[bgPage.KEY_CONTRAST];
+    //         txtContrast.value = result[bgPage.KEY_CONTRAST];
+    //     }
+    //
+    //     if(result[bgPage.KEY_DEPTH] != null){
+    //         valueContrast = result[bgPage.KEY_DEPTH];
+    //         sbDepth.value = result[bgPage.KEY_DEPTH];
+    //         txtDepth.value = result[bgPage.KEY_DEPTH];
+    //     }
+    //
+    //     bgPage.currentThemeID = result[bgPage.KEY_THEME_ID];
+    // });
 });
 
-/* Add in default theme */
+function setupImageConfiguration(slidebar, textbox, key, minValue, maxValue){
+    slidebar.value = bgPage.values[key];
+    textbox.value = bgPage.values[key];
 
-// var preSetThemes;
-// var xhr = new XMLHttpRequest();
-// xhr.onreadystatechange = function() {
-//     if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
-//         preSetThemes = JSON.parse(xhr.responseText);
-//         var menu = document.getElementById("menuTheme");
-//         var item;
-//         for(var i in preSetThemes){
-//             item = document.createElement("li");
-//             item.innerText = i;
-//             item.id = i;
-//             item.addEventListener("click", changeTheme);
-//             menu.appendChild(item);
-//         }
-//     }
-// };
-// xhr.open('GET', chrome.extension.getURL('preSetTheme.json'), true);
-// xhr.send();
-
-function changeTheme(ev){
-    console.log("changeTheme=" + ev.target.id);
-    saveToStorage(KEY_THEME_ID, ev.target.id);
-    bgPage.currentThemeID = ev.target.id;
-
-    chrome.tabs.query({status: "complete"}, function(tabs){
-        console.log("changeTheme tabs.length=" + tabs.length);
-        // var theme = preSetThemes[ev.target.id];
-        for(var i=0;i<tabs.length;i++) {
-            if(!tabs[i].url.startsWith("chrome://")){
-                bgPage.insertCSS(tabs[i].id, bgPage.preSetThemes[bgPage.currentThemeID]);
-                // chrome.tabs.insertCSS(tabs[i].id, {
-                //     code: 'html.recolor-enabled, html.recolor-enabled > body, html.recolor-enabled > body > *, html.recolor-enabled *:not([aria-hidden=true]).withBgColor:not(.withBgImage) {background-color: ' + theme.bgColor + ' !important;}html.recolor-enabled * {color: ' + theme.textColor + ' !important;border-color: ' + theme.borderColor + ' !important;box-shadow: none !important;}html.recolor-enabled ::selection {background: rgba(142,142,142,0.3) !important;}html.recolor-enabled a:link {color: ' + theme.linkColor + ' !important;}html.recolor-enabled a:visited {color: ' + theme.visitedLinkColor + ' !important;}html.recolor-enabled img, html.recolor-enabled .withBgImage {background-color: rgba(0,0,0,0) !important;/*-webkit-filter: brightness(100%) contrast(100%) !important;*/}'
-                // });
+    slidebar.addEventListener("input", function(ev){
+        textbox.value = ev.target.value;
+        changeImageConfiguration(key, ev.target.value);
+    });
+    textbox.addEventListener("input", function(ev){
+        if(timer[key]){
+            clearTimeout(timer[key]);
+        }
+        timer[key] = setTimeout(function(){
+            var newValue = ev.target.value;
+            if(newValue < minValue){
+                newValue = minValue;
+                textbox.value = newValue;
+            } else if(newValue > maxValue){
+                newValue = maxValue;
+                textbox.value = newValue;
             }
+            slidebar.value = newValue;
+
+            changeImageConfiguration(key, newValue);
+        }, 500);
+    });
+}
+
+function changeImageConfiguration(key, newValue){
+    bgPage.saveValue(key, newValue);
+    chrome.tabs.query({active: true}, function(tabs){
+        for(var i=0;i<tabs.length;i++) {
+            chrome.tabs.insertCSS(tabs[i].id, {
+                code: 'html.recolor-enabled img, html.recolor-enabled .withBgImage {-webkit-filter: brightness(' + bgPage.values[bgPage.KEY_BRIGHTNESS] + '%) contrast(' + bgPage.values[bgPage.KEY_CONTRAST] + '%) !important;}'
+            });
         }
     });
 }
 
-// function insertCSS(tabId, theme){
-//     if(theme != null){
-//         chrome.tabs.insertCSS(tabId, {
-//             code: 'html.recolor-enabled, html.recolor-enabled > body, html.recolor-enabled > body > *, html.recolor-enabled *:not([aria-hidden=true]).withBgColor:not(.withBgImage) {background-color: ' + theme.bgColor + ' !important;}html.recolor-enabled * {color: ' + theme.textColor + ' !important;border-color: ' + theme.borderColor + ' !important;box-shadow: none !important;}html.recolor-enabled ::selection {background: rgba(142,142,142,0.3) !important;}html.recolor-enabled a:link {color: ' + theme.linkColor + ' !important;}html.recolor-enabled a:visited {color: ' + theme.visitedLinkColor + ' !important;}html.recolor-enabled img, html.recolor-enabled .withBgImage {background-color: rgba(0,0,0,0) !important;/*-webkit-filter: brightness(100%) contrast(100%) !important;*/}'
-//         });
-//     }
-// }
+function renderThemeButton(name, theme){
+    var themeContentDiv = document.createElement("div");
+    themeContentDiv.className = "themeContent";
+    themeContentDiv.style = "border-color: " + theme.borderColor + "; background-color: " + theme.bgColor + ";";
+    // themeContentDiv.innerText = "A";
+    themeContentDiv.id = name;
+    themeContentDiv.addEventListener("click", changeTheme);
 
-// chrome.runtime.onMessage.addListener(
-//     function(request, sender, sendResponse) {
-//         console.log("received request tab.id=" + sender.tab.id + " currentThemeID=" + currentThemeID);
-//         if(request.action == "injectCSS"){
-//             if (sender.tab.id && sender.tab.id != chrome.tabs.TAB_ID_NONE) {
-//                 insertCSS(request.tabId, preSetThemes[currentThemeID]);
-//                 sendResponse({status: "ok2"});
-//             } else {
-//                 sendResponse({status: "tab.id does not available"});
-//             }
-//         }
-//     }
-// );
+    var textSpan = document.createElement("span");
+    textSpan.style = "color: " + theme.textColor + ";";
+    textSpan.innerText = "T";
 
-// chrome.tabs.onCreated.addListener(function(tab){
-//      insertCSS(tab.id, preSetThemes[currentThemeID]);
-// });
-//
-// chrome.tabs.onUpdated.addListener(function(tabsId, changeInfo, tab){
-//     console.log("tabs.onUpdated tabsId=" + tabsId);
-//      insertCSS(tabsId, preSetThemes[currentThemeID]);
-// });
+    var linkSpan = document.createElement("span");
+    linkSpan.style = "color: " + theme.linkColor + ";";
+    linkSpan.innerText = "L";
+
+    var visitedSpan = document.createElement("span");
+    visitedSpan.style = "color: " + theme.visitedLinkColor + ";";
+    visitedSpan.innerText = "V";
+
+    themeContentDiv.appendChild(textSpan);
+    themeContentDiv.appendChild(linkSpan);
+    themeContentDiv.appendChild(visitedSpan);
+
+    var nameSpan = document.createElement("span");
+    nameSpan.className = "themeName";
+    nameSpan.innerText = name;
+
+    var themeBlockDiv = document.createElement("div");
+    themeBlockDiv.className = "themeBlock";
+    themeBlockDiv.appendChild(themeContentDiv);
+    themeBlockDiv.appendChild(nameSpan);
+
+    var item = document.createElement("li");
+    item.appendChild(themeBlockDiv);
+
+    return item;
+}
+
+function changeTheme(ev){
+    console.log("changeTheme target=" + ev.target);
+    console.log("changeTheme=" + ev.target.id);
+    bgPage.saveValue(bgPage.KEY_THEME_ID, ev.target.id);
+    bgPage.currentThemeID = ev.target.id;
+
+    chrome.tabs.query({status: "complete"}, function(tabs){
+        console.log("changeTheme tabs.length=" + tabs.length);
+        for(var i=0;i<tabs.length;i++) {
+            if(!tabs[i].url.startsWith("chrome://")){
+                bgPage.insertCSS(tabs[i].id, bgPage.preSetThemes[bgPage.currentThemeID]);
+
+            }
+        }
+    });
+}

@@ -1,27 +1,114 @@
+<!DOCTYPE html>
 <html>
     <head>
         <link href="popup.css" rel="stylesheet" type="text/css" />
+        <link href="onoffswitch.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="popup.js"></script>
     </head>
     <body>
-        <button id="btnEnable" type="button">Enabled</button>
-        <h2>Color Themes</h2>
-        <div>
-            <ul id="menuTheme"></ul>
+        <div class="configGroup">
+            <!-- <button id="btnEnable" type="button">Enabled</button> -->
+            <div class="onoffswitch">
+                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="chkbOnOff" checked />
+                <label class="onoffswitch-label" for="chkbOnOff">
+                    <span class="onoffswitch-inner"></span>
+                    <span class="onoffswitch-switch"></span>
+                </label>
+            </div>
         </div>
+
         <hr>
-        <h2>Image</h2>
-        Brightness:
-        <span id="txtBrightness">100</span>
-        <input type="range" id="sbBrightness" min="0" max="200" value="100" /> <br/>
-        Contrast:
-        <span id="txtContrast">100</span>
-        <input type="range" id="sbContrast" min="0" max="200" value="100" />
+        <div class="configGroup">
+            <div class="header">
+                <h2>Color Themes</h2>
+                <div class="helpTips">
+                    <p>
+                        Select your theme <br/>
+                        T - Text color <br/>
+                        L - Link color <br/>
+                        V - Visited link color
+                    </p>
+                </div>
+            </div>
+            <div>
+                <ul id="menuTheme" class="horizontalMenu"></ul>
+            </div>
+            <h3>Your Themes</h3>
+        </div>
+
         <hr>
-        <h2>Advance</h2>
-        Depth:
-        <span id="txtDepth">20</span>
-        <input type="range" id="sbDepth" min="0" max="100" value="20" /> <br/>
-        <a href="test.html">test link</a>
+        <div class="configGroup">
+            <h2>Image</h2>
+            <table>
+                <tr>
+                    <td>
+                        <label for="txtBrightness">Brightness</label>
+                    </td>
+                    <td>
+                        <input type="range" id="sbBrightness" min="0" max="200" value="100" />
+                    </td>
+                    <td>
+                        <input type="text" id="txtBrightness" class="rangeValue" value="100"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <label for="txtContrast">Contrast</label>
+                    </td>
+                    <td>
+                        <input type="range" id="sbContrast" min="0" max="200" value="100" />
+                    </td>
+                    <td>
+                        <input type="text" id="txtContrast" class="rangeValue" value="100"></input>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <hr>
+        <a id="linkAdvance" href=#"">Show Advance Settings</a>
+        <div class="configGroup" id="blockAdvance" style="display:none;">
+            <h2>Advance</h2>
+            <table>
+                <tr>
+                    <td>
+                        <label for="txtDepth">Depth</label>
+                    </td>
+                    <td>
+                        <input type="range" id="sbDepth" min="0" max="100" value="20" />
+                    </td>
+                    <td>
+                        <input type="text" id="txtDepth" class="rangeValue" value="20"></input>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        <label for="chkbDarkStart">Dark at loading</label>
+                    </td>
+                    <td>
+                        <input type="checkbox" id="chkbDarkStart" checked />
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <!-- <ul class="horizontalMenu">
+            <li>
+                <div class="themeBlock">
+                    <div class="themeContent" style="border-color: #464A54; background-color: #282C34;">
+                        <span style="color: #ABB2BF;">T</span>
+                        <span style="color: #769EC1;">L</span>
+                        <span style="color: #C18176;">V</span>
+                    </div>
+                    <span class="themeName">name</span>
+                </div>
+            </li>
+            <li>
+                <div class="themeBlock">
+                    <div class="themeContent" style="border-color: #464A54; color: #ABB2BF; background-color: #282C34;">A</div>
+                    <span class="themeName">name</span>
+                </div>
+            </li>
+        </ul> -->
     </body>
 </html>
