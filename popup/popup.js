@@ -1,52 +1,54 @@
-// var KEY_ENABLED = "isEnabled";
-// var KEY_THEME_ID = "theme";
-// var KEY_BRIGHTNESS = "brightness";
-// var KEY_CONTRAST = "contrast";
-// var KEY_DEPTH = "depth";
-//
-// var MIN_BRIGHTNESS = 0;
-// var MAX_BRIGHTNESS = 200;
-// var MIN_CONTRAST = 0;
-// var MAX_CONTRAST = 200;
-// var MIN_DEPTH = 0;
-// var MAX_DEPTH = 0;
-//
-// var valueEnabled = true;
-// var valueBrightness = 100;
-// var valueContrast = 100;
-// var valueDepth = 20;
-// var currentThemeID = null;
-
 var bgPage = chrome.extension.getBackgroundPage();
-
-// function saveToStorage(key, value){
-//     var obj = {};
-//     obj[key] = value;
-//     chrome.storage.local.set(obj);
-// }
-
-function sendMessageToContentScript(isEnabled){
-    chrome.tabs.query({status: "complete"}, function(tabs){
-        console.log("tabs.length=" + tabs.length);
-        for(var i=0;i<tabs.length;i++) {
-            chrome.tabs.sendMessage(tabs[i].id, {isEnable: isEnabled}, function(response){
-                console.log("contentScript is done.");
-            });
-        }
-    });
-}
-
 var brightnessTimer;
 var timer = {};
+var contextMenuId = "";
+
 /* page event */
 document.addEventListener("DOMContentLoaded", function(){
-    var menu = document.getElementById("menuTheme");
     var item;
+
+    /* init pre-set theme */
+    var menu = document.getElementById("menuTheme");
     for(var i in bgPage.preSetThemes){
         item = renderThemeButton(i, bgPage.preSetThemes[i]);
         menu.appendChild(item);
     }
 
+    /* init custom themes */
+    var customThemesMenu = document.getElementById("menuCustomTheme");
+    for(var i in bgPage.customThemes){
+        console.log("custom Theme=" + i + ", bgColor=" + bgPage.customThemes[i].bgColor);
+        item = renderThemeButton(i, bgPage.customThemes[i]);
+        item.addEventListener("contextmenu", customThemeRightClick);
+        customThemesMenu.appendChild(item);
+    }
+
+    var btnCreateTheme = document.getElementById("btnCreateTheme");
+    btnCreateTheme.addEventListener("click", function(ev){
+        window.location.href = "./createTheme.html";
+    });
+
+    var customEdit = document.getElementById("customThemeEdit");
+    customEdit.addEventListener("click", function(ev){
+        console.log("customEdit");
+        if(contextMenuId && contextMenuId.length > 0){
+            window.location.href = "./createTheme.html?id=" + contextMenuId;
+        }
+    });
+
+    var customDelete = document.getElementById("customThemeDelete");
+    customDelete.addEventListener("click", function(ev){
+        console.log("customDelete");
+        if(contextMenuId && contextMenuId.length > 0){
+            var menuCustomTheme = document.getElementById("menuCustomTheme");
+            var menuItem = document.getElementById(contextMenuId);
+            menuCustomTheme.removeChild(menuItem);
+
+            bgPage.deleteTheme(contextMenuId);
+        }
+    });
+
+    /* init on off button */
     var chkbOnOff = document.getElementById("chkbOnOff");
     if(bgPage.values[bgPage.KEY_ENABLED] != 0){
         chkbOnOff.checked = true;
@@ -67,75 +69,20 @@ document.addEventListener("DOMContentLoaded", function(){
         });
     });
 
+    /* init image configuration */
     var sbBrightness = document.getElementById("sbBrightness");
     var txtBrightness = document.getElementById("txtBrightness");
     setupImageConfiguration(sbBrightness, txtBrightness, bgPage.KEY_BRIGHTNESS, bgPage.MIN_BRIGHTNESS, bgPage.MAX_BRIGHTNESS);
-    // sbBrightness.value = bgPage.values[bgPage.KEY_BRIGHTNESS];
-    // txtBrightness.value = bgPage.values[bgPage.KEY_BRIGHTNESS];
-    // sbBrightness.addEventListener("input", function(ev){
-    //     txtBrightness.value = ev.target.value;
-    //
-    //     changeImageConfiguration(bgPage.KEY_BRIGHTNESS, ev.target.value);
-    //     // bgPage.saveValue(bgPage.KEY_BRIGHTNESS, ev.target.value);
-    //     // chrome.tabs.query({active: true}, function(tabs){
-    //     //     for(var i=0;i<tabs.length;i++) {
-    //     //         chrome.tabs.insertCSS(tabs[i].id, {
-    //     //             code: 'html.recolor-enabled img, html.recolor-enabled .withBgImage {-webkit-filter: brightness(' + bgPage.values[bgPage.KEY_BRIGHTNESS] + '%) contrast(' + bgPage.values[bgPage.KEY_CONTRAST] + '%) !important;}'
-    //     //         });
-    //     //     }
-    //     // });
-    // });
-    // txtBrightness.addEventListener("input", function(ev){
-    //     if(brightnessTimer){
-    //         clearTimeout(brightnessTimer);
-    //     }
-    //     brightnessTimer = setTimeout(function(){
-    //         var newValue = ev.target.value;
-    //         if(newValue < bgPage.MIN_BRIGHTNESS){
-    //             newValue = bgPage.MIN_BRIGHTNESS;
-    //             txtBrightness.value = newValue;
-    //         } else if(newValue > bgPage.MAX_BRIGHTNESS){
-    //             newValue = bgPage.MAX_BRIGHTNESS;
-    //             txtBrightness.value = newValue;
-    //         }
-    //         sbBrightness.value = newValue;
-    //
-    //         changeImageConfiguration(bgPage.KEY_BRIGHTNESS, newValue);
-    //         // bgPage.saveValue(bgPage.KEY_BRIGHTNESS, newValue);
-    //         // chrome.tabs.query({active: true}, function(tabs){
-    //         //     for(var i=0;i<tabs.length;i++) {
-    //         //         chrome.tabs.insertCSS(tabs[i].id, {
-    //         //             code: 'html.recolor-enabled img, html.recolor-enabled .withBgImage {-webkit-filter: brightness(' + bgPage.values[bgPage.KEY_BRIGHTNESS] + '%) contrast(' + bgPage.values[bgPage.KEY_CONTRAST] + '%) !important;}'
-    //         //         });
-    //         //     }
-    //         // });
-    //     }, 1000);
-    // });
 
     var sbContrast = document.getElementById("sbContrast");
     var txtContrast = document.getElementById("txtContrast");
     setupImageConfiguration(sbContrast, txtContrast, bgPage.KEY_CONTRAST, bgPage.MIN_CONTRAST, bgPage.MAX_CONTRAST);
-    // sbContrast.value = bgPage.values[bgPage.KEY_CONTRAST];
-    // txtContrast.value = bgPage.values[bgPage.KEY_CONTRAST];
-    // sbContrast.addEventListener("input", function(ev){
-    //     txtContrast.value = ev.target.value;
-    //     valueContrast = ev.target.value;
-    //     bgPage.saveValue(bgPage.KEY_CONTRAST, valueContrast);
-    //
-    //     chrome.tabs.query({active: true}, function(tabs){
-    //         for(var i=0;i<tabs.length;i++) {
-    //             chrome.tabs.insertCSS(tabs[i].id, {
-    //                 code: 'html.recolor-enabled img, html.recolor-enabled .withBgImage {-webkit-filter: brightness(' + bgPage.values[bgPage.KEY_BRIGHTNESS] + '%) contrast(' + valueContrast + '%) !important;}'
-    //             });
-    //         }
-    //     });
-    // });
 
+    /* init advance settings */
     var sbDepth = document.getElementById("sbDepth");
     var txtDepth = document.getElementById("txtDepth");
     sbDepth.value = bgPage.values[bgPage.KEY_DEPTH];
     txtDepth.value = bgPage.values[bgPage.KEY_DEPTH];
-
     sbDepth.addEventListener("input", function(ev){
         txtDepth.value = ev.target.value;
         // valueDepth = ev.target.value;
@@ -172,36 +119,25 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });
 
-    // chrome.storage.local.get([bgPage.KEY_BRIGHTNESS, bgPage.KEY_CONTRAST, bgPage.KEY_ENABLED, bgPage.KEY_DEPTH, bgPage.KEY_THEME_ID], function(result){
-    //     if(result[bgPage.KEY_ENABLED] != 0){
-    //         // btnEnable.innerHTML = "Enabled";
-    //         chkbOnOff.checked = true;
-    //     } else {
-    //         // btnEnable.innerHTML = "Disabled";
-    //         chkbOnOff.checked = false;
-    //     }
-    //
-    //     if(result[bgPage.KEY_BRIGHTNESS] != null){
-    //         valueBrightness = result[bgPage.KEY_BRIGHTNESS];
-    //         sbBrightness.value = result[bgPage.KEY_BRIGHTNESS];
-    //         txtBrightness.value = result[bgPage.KEY_BRIGHTNESS];
-    //     }
-    //
-    //     if(result[bgPage.KEY_CONTRAST] != null){
-    //         valueContrast = result[bgPage.KEY_CONTRAST];
-    //         sbContrast.value = result[bgPage.KEY_CONTRAST];
-    //         txtContrast.value = result[bgPage.KEY_CONTRAST];
-    //     }
-    //
-    //     if(result[bgPage.KEY_DEPTH] != null){
-    //         valueContrast = result[bgPage.KEY_DEPTH];
-    //         sbDepth.value = result[bgPage.KEY_DEPTH];
-    //         txtDepth.value = result[bgPage.KEY_DEPTH];
-    //     }
-    //
-    //     bgPage.currentThemeID = result[bgPage.KEY_THEME_ID];
-    // });
 });
+
+document.documentElement.addEventListener("click", function(ev){
+    var menu = document.getElementById("customThemeRightClick");
+    if(menu && menu.style.display != "none") {
+        menu.style.display = "none";
+    }
+});
+
+function sendMessageToContentScript(isEnabled){
+    chrome.tabs.query({status: "complete"}, function(tabs){
+        console.log("tabs.length=" + tabs.length);
+        for(var i=0;i<tabs.length;i++) {
+            chrome.tabs.sendMessage(tabs[i].id, {isEnable: isEnabled}, function(response){
+                console.log("contentScript is done.");
+            });
+        }
+    });
+}
 
 function setupImageConfiguration(slidebar, textbox, key, minValue, maxValue){
     slidebar.value = bgPage.values[key];
@@ -236,19 +172,19 @@ function changeImageConfiguration(key, newValue){
     chrome.tabs.query({active: true}, function(tabs){
         for(var i=0;i<tabs.length;i++) {
             chrome.tabs.insertCSS(tabs[i].id, {
-                code: 'html.recolor-enabled img, html.recolor-enabled .withBgImage {-webkit-filter: brightness(' + bgPage.values[bgPage.KEY_BRIGHTNESS] + '%) contrast(' + bgPage.values[bgPage.KEY_CONTRAST] + '%) !important;}'
+                code: 'html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {-webkit-filter: brightness(' + bgPage.values[bgPage.KEY_BRIGHTNESS] + '%) contrast(' + bgPage.values[bgPage.KEY_CONTRAST] + '%) !important;}'
             });
         }
     });
 }
 
-function renderThemeButton(name, theme){
+function renderThemeButton(id, theme){
     var themeContentDiv = document.createElement("div");
     themeContentDiv.className = "themeContent";
     themeContentDiv.style = "border-color: " + theme.borderColor + "; background-color: " + theme.bgColor + ";";
     // themeContentDiv.innerText = "A";
-    themeContentDiv.id = name;
-    themeContentDiv.addEventListener("click", changeTheme);
+    // themeContentDiv.id = id;
+    // themeContentDiv.addEventListener("click", changeTheme);
 
     var textSpan = document.createElement("span");
     textSpan.style = "color: " + theme.textColor + ";";
@@ -268,32 +204,54 @@ function renderThemeButton(name, theme){
 
     var nameSpan = document.createElement("span");
     nameSpan.className = "themeName";
-    nameSpan.innerText = name;
+    nameSpan.innerText = theme.name;
+    nameSpan.style = "overflow:hidden;white-space:nowrap;text-overflow:ellipsis;width:inherit;display:inline-block;";
 
     var themeBlockDiv = document.createElement("div");
     themeBlockDiv.className = "themeBlock";
+    themeBlockDiv.title = theme.name;
     themeBlockDiv.appendChild(themeContentDiv);
     themeBlockDiv.appendChild(nameSpan);
 
     var item = document.createElement("li");
+    item.id = id;
+    item.addEventListener("click", changeTheme);
     item.appendChild(themeBlockDiv);
 
     return item;
 }
 
 function changeTheme(ev){
-    console.log("changeTheme target=" + ev.target);
-    console.log("changeTheme=" + ev.target.id);
-    bgPage.saveValue(bgPage.KEY_THEME_ID, ev.target.id);
-    bgPage.currentThemeID = ev.target.id;
+    console.log("changeTheme target=" + this);
+    console.log("changeTheme=" + this.id);
+    bgPage.saveValue(bgPage.KEY_THEME_ID, this.id);
+    bgPage.currentThemeID = this.id;
 
     chrome.tabs.query({status: "complete"}, function(tabs){
         console.log("changeTheme tabs.length=" + tabs.length);
         for(var i=0;i<tabs.length;i++) {
             if(!tabs[i].url.startsWith("chrome://")){
-                bgPage.insertCSS(tabs[i].id, bgPage.preSetThemes[bgPage.currentThemeID]);
-
+                // bgPage.insertCSS(tabs[i].id, bgPage.preSetThemes[bgPage.currentThemeID]);
+                bgPage.insertCSS(tabs[i].id, bgPage.getTheme(bgPage.currentThemeID));
             }
         }
     });
+}
+
+/**
+ * Event Listener for right-click on custom theme. It will show a context menu.
+ * User can delete or edit the theme from this context menu.
+ */
+function customThemeRightClick(ev){
+    console.log("capture right click x=" + ev.clientX + " y=" + ev.clientY);
+    ev.preventDefault();
+
+    var menu = document.getElementById("customThemeRightClick");
+    menu.style.left = ev.clientX + "px";
+    menu.style.top = ev.clientY + "px";
+    menu.style.display = "block";
+
+    contextMenuId = this.id;
+
+    return false;
 }

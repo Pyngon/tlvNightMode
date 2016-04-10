@@ -1,28 +1,30 @@
 console.log("changeColor.js");
 
-var myOriginalClass;
-if(typeof originalClass !== "undefined"){
-    /* init.js is not injected */
-    console.log("originalClass exist");
-    myOriginalClass = originalClass;
-} else {
-    console.log("originalClass doesn't exist");
-    myOriginalClass = document.documentElement.className;
-}
+// var myOriginalClass;
+// if(typeof originalClass !== "undefined"){
+//     /* init.js is not injected */
+//     console.log("originalClass exist");
+//     myOriginalClass = originalClass;
+// } else {
+//     console.log("originalClass doesn't exist");
+//     myOriginalClass = document.documentElement.className;
+// }
 
 chrome.storage.local.get("isEnabled", function(result){
     console.log("local.get=" + result["isEnabled"]);
-    if(result["isEnabled"] != 0 && !document.documentElement.className.includes("recolor-enabled")){
-        document.documentElement.className += " recolor-enabled";
+    if(result["isEnabled"] != 0 && !document.documentElement.className.includes("tlvNightModeOn")){
+        document.documentElement.className += " tlvNightModeOn";
     }
 });
 
 function disable(){
-    document.documentElement.className = myOriginalClass;
+    // document.documentElement.className = myOriginalClass;
+    console.log("disable className=" + document.documentElement.className);
+    document.documentElement.className = document.documentElement.className.replace(new RegExp(' tlvNightModeOn', 'g'), '');
 }
 
 function enable(){
-    document.documentElement.className += " recolor-enabled";
+    document.documentElement.className += " tlvNightModeOn";
 }
 
 chrome.runtime.onMessage.addListener(

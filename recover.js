@@ -1,4 +1,4 @@
-if(document.documentElement.className.includes("recolor-enabled")){
+if(document.documentElement.className.includes("tlvNightModeOn")){
     // document.documentElement.style.color = originalColor;
     var brightenInterval = setInterval(function(){
         var filter = document.documentElement.style.webkitFilter;

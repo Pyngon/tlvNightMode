@@ -1,26 +1,26 @@
-html.recolor-enabled, html.recolor-enabled > body, html.recolor-enabled > body > *, html.recolor-enabled *:not([aria-hidden=true]).withBgColor:not(.withBgImage) {
+html.tlvNightModeOn, html.tlvNightModeOn > body, html.tlvNightModeOn > body > *, html.tlvNightModeOn *:not([aria-hidden=true]).withBgColor:not(.withBgImage) {
     background-color: rgba(40,44,52,1) !important;
 }
 
-html.recolor-enabled * {
+html.tlvNightModeOn * {
     color: #ABB2BF !important;
     border-color: #464A54 !important;
     box-shadow: none !important;
 }
 
-html.recolor-enabled ::selection {
+html.tlvNightModeOn ::selection {
     background: rgba(142,142,142,0.3) !important;
 }
 
-html.recolor-enabled a:link {
+html.tlvNightModeOn a:link {
     color: #769EC1 !important;
 }
 
-html.recolor-enabled a:visited {
+html.tlvNightModeOn a:visited {
     color: #C18176 !important;
 }
 
-html.recolor-enabled img, html.recolor-enabled .withBgImage {
+html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {
     background-color: rgba(0,0,0,0) !important;
     /*-webkit-filter: brightness(100%) contrast(100%) !important;*/
 }

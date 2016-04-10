@@ -9,6 +9,11 @@ h2 {
     margin: 0px;
 }
 
+h3 {
+    padding: 0px;
+    margin: 0px;
+}
+
 a {
     color: #769EC1;
 }
@@ -19,6 +24,10 @@ a {
 
 .header, .header * {
     display: inline-block;
+}
+
+.content {
+    position: relative;
 }
 
 .helpTips {
@@ -124,4 +133,24 @@ table tr td {
     position: relative;
     width: 30px;
     margin: 0 auto;
+}
+
+.contextMenu {
+    position: absolute;
+    width: 100px;
+    background-color: #545454;
+    padding: 5px;
+    box-shadow: 0 0 2px 1px white;
+    display: none;
+}
+
+.contextMenu ul {
+    list-style: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+.contextMenu li:hover {
+    background-color: #9A6024;
+    cursor: default;
 }

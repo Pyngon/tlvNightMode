@@ -1,5 +1,6 @@
 {
     "t1": {
+        "name": "Default",
         "bgColor": "#282C34",
         "textColor": "#ABB2BF",
         "borderColor": "#464A54",
@@ -7,6 +8,7 @@
         "visitedLinkColor": "#C18176"
     },
     "t2": {
+        "name": "Retro",
         "bgColor": "#252120",
         "textColor": "#E5DFC5",
         "borderColor": "#91C7A9",
@@ -14,6 +16,7 @@
         "visitedLinkColor": "#A92F41"
     },
     "t3": {
+        "name": "Theme 3",
         "bgColor": "#151515",
         "textColor": "#6A6A68",
         "borderColor": "#FFFFFF",
@@ -21,6 +24,7 @@
         "visitedLinkColor": "#43442B"
     },
     "t4": {
+        "name": "Theme 4",
         "bgColor": "181712",
         "textColor": "#B0ABA0",
         "borderColor": "#F0F0F0",
