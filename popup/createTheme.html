@@ -1,39 +1,43 @@
 <html>
     <head>
         <link href="popup.css" rel="stylesheet" type="text/css" />
+        <link href="createTheme.css" rel="stylesheet" type="text/css" />
         <script type="text/javascript" src="createTheme.js"></script>
         <script type="text/javascript" src="jscolor.min.js"></script>
     </head>
     <body>
-        <button id="btnBack">Back</button>
-        <table>
+        <h2>Create Theme</h2>
+        <table id="tblCreateTheme">
             <tr>
-                <td>Name</td>
+                <td><label for="txtName">Name</label></td>
                 <td><input type="text" id="txtName" /></td>
             </tr>
             <tr>
-                <td>Background</td>
+                <td><label for="colorBg">Background</label></td>
                 <td><input class="jscolor" id="colorBg" /></td>
             </tr>
             <tr>
-                <td>Text</td>
+                <td><label for="colorText">Text</label></td>
                 <td><input class="jscolor" id="colorText" /></td>
             </tr>
             <tr>
-                <td>Border</td>
+                <td><label for="colorBorder">Border</label></td>
                 <td><input class="jscolor" id="colorBorder" /></td>
             </tr>
             <tr>
-                <td>Link</td>
+                <td><label for="colorLink">Link</label></td>
                 <td><input class="jscolor" id="colorLink" /></td>
             </tr>
             <tr>
-                <td>Visited Link</td>
+                <td><label for="colorVisitedLink">Visited Link</label></td>
                 <td><input class="jscolor" id="colorVisitedLink" /></td>
             </tr>
             <tr>
-                <td colspan="2">
-                    <button id="btnSave">Save</button>
+                <td colspan="2" style="padding-top: 30px; padding-bottom: 10px;">
+                    <div>
+                        <button id="btnSave">Save</button>
+                        <button id="btnBack">Back</button>
+                    </div>
                 </td>
             </tr>
         </table>

@@ -38,12 +38,12 @@
         {
             "matches": ["<all_urls>"],
             "run_at": "document_end",
-            "js": ["changeColor.js"],
+            "js": ["recover.js"],
             "all_frames": true
         },
         {
             "matches": ["<all_urls>"],
-            "js": ["recover.js"],
+            "js": ["changeColor.js"],
             "all_frames": true
         }
     ]

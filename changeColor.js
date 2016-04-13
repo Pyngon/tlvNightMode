@@ -1,5 +1,5 @@
 console.log("changeColor.js");
-
+console.log("window width=" + window.innerWidth + ", height=" + window.innerHeight);
 // var myOriginalClass;
 // if(typeof originalClass !== "undefined"){
 //     /* init.js is not injected */
@@ -20,7 +20,7 @@ chrome.storage.local.get("isEnabled", function(result){
 function disable(){
     // document.documentElement.className = myOriginalClass;
     console.log("disable className=" + document.documentElement.className);
-    document.documentElement.className = document.documentElement.className.replace(new RegExp(' tlvNightModeOn', 'g'), '');
+    document.documentElement.className = document.documentElement.className.replace(new RegExp('tlvNightModeOn', 'g'), '');
 }
 
 function enable(){
@@ -49,19 +49,30 @@ pyngon.webColor = (function(){
         traceDOM: function(node){
 
             if(node.nodeType == Node.ELEMENT_NODE){
-                var computedStyle = window.getComputedStyle(node);
-                if(computedStyle != null && computedStyle.backgroundImage != "none"){
-                    node.className += " withBgImage";
-                }
-                if(node.parentNode != document.body){
-                    var color = parseColor(computedStyle.backgroundColor);
-                    if(computedStyle && (!color[3] || color[3] != 1)){
-                        node.className += " noBgColor";
-                    } else {
-                        node.className += " withBgColor";
-                    }
-                }
-
+                // console.log("traceDOM tag=" + node.tagName + ", class=" + node.className + ", id=" + node.id);
+                // var computedStyle = window.getComputedStyle(node);
+                // if(node.className.includes("wq")){
+                //     console.log("found wq");
+                //     console.log("class wq width=" + node.offsetWidth + ", height=" + node.offsetHeight + " computedStyle.backgroundImage=" + computedStyle.backgroundImage);
+                // }
+                // if(computedStyle != null && computedStyle.backgroundImage != "none"){
+                //     node.className += " withBgImage";
+                // }
+                //
+                // // if(node.offsetWidth/window.innerWidth > 0.6){
+                // //     console.log("found full screen image");
+                // //     node.className += " fullscreenBgImage";
+                // // }
+                //
+                // if(node.parentNode != document.body){
+                //     var color = parseColor(computedStyle.backgroundColor);
+                //     if(computedStyle && (!color[3] || color[3] != 1)){
+                //         node.className += " noBgColor";
+                //     } else {
+                //         node.className += " withBgColor";
+                //     }
+                // }
+                tagElement(node);
             }
 
             var childNodes = node.childNodes;
@@ -87,10 +98,15 @@ pyngon.webColor = (function(){
 
 })();
 
-pyngon.webColor.traceDOM(document.body);
+var startDelay = setTimeout(delayFunction,1500);
 
-var maxDepth = 20;
-observeBody(document.body);
+function delayFunction(){
+    pyngon.webColor.traceDOM(document.body);
+    observeBody(document.body);
+}
+
+var maxDepth = 25;
+
 function observeBody(body){
     var bodyMutationObserver = new MutationObserver(function(records){
         chrome.storage.local.get("depth", function(result){
@@ -104,13 +120,19 @@ function observeBody(body){
                         analyzeAndModifyNode(records[i].addedNodes[j], true, 0);
                     }
                 }
+                // else if(records[i].type == "attributes"){
+                //     console.log("mutation observer style changed class=" + records[i].target.className + " oldValue=" + records[i].oldValue + ", newValue=" + records[i].target.style.cssText);
+                //     if(records[i].target.style.cssText.includes("background-color") || records[i].target.style.cssText.includes("background-image")){
+                //         analyzeAndModifyNode(records[i].target, false, 0);
+                //     }
+                // }
             }
 
         });
 
     });
-    // var bodyInit = {childList: true, attributes: true, subtree: true, attributeOldValue: true, attributeFilter: ["class"]};
-    var bodyInit = {childList: true, subtree: true};
+
+    var bodyInit = {childList: true, subtree: true}; // , attributes: true, attributeOldValue: true, attributeFilter: ["style", "class"]
     bodyMutationObserver.observe(body, bodyInit);
 }
 
@@ -122,33 +144,89 @@ function analyzeAndModifyNode(node, checkChild, depth){
     if(node && (!node.className || (!node.className.includes("noBgColor") && !node.className.includes("withBgColor") && !node.className.includes("withBgImage")))) {
 
         if(node.nodeType == Node.ELEMENT_NODE){
-            console.log("analyzeAndModifyNode tag=" + node.tagName + ", class=" + node.className + ", id=" + node.id);
-                var computedStyle = window.getComputedStyle(node);
-                if(!node.className.includes("withBgImage")){
-                    if(computedStyle != null && computedStyle.backgroundImage != "none"){
-                        node.className += " withBgImage";
-                        return;
-                    }
-                }
+            // console.log("analyzeAndModifyNode tag=" + node.tagName + ", class=" + node.className + ", id=" + node.id);
+            // if(node.className.includes("wl")){
+            //     console.log("found wl");
+            //     console.log("class wl widht=" + node.offsetWidth + ", heigth=" + node.offsetHeight);
+            // }
+            //
+            // var computedStyle = window.getComputedStyle(node);
+            // if(!node.className.includes("withBgImage") || !node.className.includes("fullscreenBgImage")){
+            //     if(computedStyle != null && computedStyle.backgroundImage != "none"){
+            //         // if(node.offsetWidth/window.innerWidth > 0.6){
+            //         //     console.log("found full screen image");
+            //         //     node.className += " fullscreenBgImage";
+            //         // } else {
+            //             node.className += " withBgImage";
+            //         // }
+            //         // return;
+            //     }
+            // }
+            //
+            // if(node.parentNode && node.parentNode.tagName && node.parentNode.tagName.toLowerCase() != "body"){
+            //     console.log("color=" + computedStyle.backgroundColor);
+            //     var color = parseColor(computedStyle.backgroundColor);
+            //     if(computedStyle && (!color[3] || color[3] <= 0.6)){
+            //         if(!node.className.includes("noBgColor")){
+            //             node.className += " noBgColor";
+            //         }
+            //     } else {
+            //         if(!node.className.includes("withBgColor")){
+            //             node.className += " withBgColor";
+            //         }
+            //     }
+            // }
+            tagElement(node);
 
-                if(node.parentNode && node.parentNode.tagName && node.parentNode.tagName.toLowerCase() != "body"){
-                    console.log("color=" + computedStyle.backgroundColor);
-                    var color = parseColor(computedStyle.backgroundColor);
-                    if(computedStyle && (!color[3] || color[3] != 1)){
-                        if(!node.className.includes("noBgColor")){
-                            node.className += " noBgColor";
-                        }
-                    } else {
-                        if(!node.className.includes("withBgColor")){
-                            node.className += " withBgColor";
-                        }
-                    }
-                }
         }
         if(checkChild){
             var childNodes = node.childNodes;
             for(var i=0;i<childNodes.length;i++){
                 analyzeAndModifyNode(childNodes[i], checkChild, depth+1);
+            }
+        }
+    }
+}
+
+function tagElement(node){
+    if(node instanceof SVGElement){
+        return;
+    }
+    console.log("tagElement tag=" + node.tagName + ", class=" + node.className + ", id=" + node.id);
+
+    var computedStyle = window.getComputedStyle(node);
+    // if(node.className.includes("wq")){
+    //     console.log("found wq");
+    //     console.log("class wq width=" + node.offsetWidth + ", height=" + node.offsetHeight);
+    // }
+
+    if(node.offsetWidth/window.innerWidth > 0.8 && node.offsetHeight/window.innerHeight > 0.8){
+        console.log("found full screen image");
+        if(!node.className || !node.className.includes("fullscreenBgImage")){
+            node.className += " fullscreenBgImage";
+        }
+    } else if(!node.className || !node.className.includes("withBgImage")){
+        if(computedStyle != null && computedStyle.backgroundImage != "none"){
+            // if(node.offsetWidth/window.innerWidth > 0.6 && node.offsetHeight/window.innerHeight > 0.6){
+            //     console.log("found full screen image");
+            //     node.className += " fullscreenBgImage";
+            // } else {
+                node.className += " withBgImage";
+            // }
+            return;
+        }
+    }
+
+    if(node.parentNode && node.parentNode != document.body){
+        // console.log("color=" + computedStyle.backgroundColor);
+        var color = parseColor(computedStyle.backgroundColor);
+        if(computedStyle && (!color[3] || color[3] <= 0.6)){
+            if(!node.className || !node.className.includes("noBgColor")){
+                node.className += " noBgColor";
+            }
+        } else {
+            if(!node.className || !node.className.includes("withBgColor")){
+                node.className += " withBgColor";
             }
         }
     }

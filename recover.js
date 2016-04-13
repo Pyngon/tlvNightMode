@@ -12,6 +12,9 @@ if(document.documentElement.className.includes("tlvNightModeOn")){
                 document.documentElement.style.webkitFilter = "";
                 clearInterval(brightenInterval);
             }
+        } else {
+            document.documentElement.style.webkitFilter = "";
+            clearInterval(brightenInterval);
         }
 
     }, 100);

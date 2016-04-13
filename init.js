@@ -4,7 +4,6 @@ var originalWebkitFilter = document.documentElement.style.webkitFilter;
 
 document.documentElement.className += ' tlvNightModeOn';
 document.documentElement.style.color = "#ABB2BF";
-document.documentElement.style.webkitFilter = "brightness(40%)";
 
 chrome.storage.local.get("isEnabled", function(result){
     console.log("local.get=" + result["isEnabled"]);
@@ -14,11 +13,20 @@ chrome.storage.local.get("isEnabled", function(result){
         document.documentElement.style.color = originalColor;
         document.documentElement.style.webkitFilter = originalWebkitFilter;
     } else {
+
+        chrome.storage.local.get("darkLoading", darkLoadingCallback);
+
         chrome.runtime.sendMessage({action: "injectCSS"}, function(response) {
-            console.log(response.status);
+            // console.log(response.status);
         });
     }
 });
+
+function darkLoadingCallback(result){
+    if(result["darkLoading"] != 0){
+        document.documentElement.style.webkitFilter = "brightness(40%)";
+    }
+}
 
 // chrome.runtime.sendMessage({action: "injectCSS"}, function(response){
 //     console.log("injectCSS response=" + Object.keys(response));

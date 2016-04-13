@@ -7,6 +7,7 @@ var KEY_BRIGHTNESS = "brightness";
 var KEY_CONTRAST = "contrast";
 var KEY_DEPTH = "depth";
 var KEY_CUSTOM_THEMES = "customThemes";
+var KEY_DARK_LOADING = "darkLoading";
 
 var MIN_BRIGHTNESS = 0;
 var MAX_BRIGHTNESS = 200;
@@ -19,13 +20,16 @@ var values = {};
 values[KEY_ENABLED] = 1;
 values[KEY_BRIGHTNESS] = 100;
 values[KEY_CONTRAST] = 100;
-values[KEY_DEPTH] = 20;
+values[KEY_DEPTH] = 25;
+values[KEY_DARK_LOADING] = 1;
 
 var currentThemeID = "";
 var preSetThemes;
 var customThemes = {};
 
-chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, KEY_THEME_ID, KEY_CUSTOM_THEMES], function(result){
+var timerApplyAll;
+
+chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, KEY_THEME_ID, KEY_CUSTOM_THEMES, KEY_DARK_LOADING], function(result){
     if(result[KEY_ENABLED] != 0){
         values[KEY_ENABLED] = result[KEY_ENABLED];
     }
@@ -47,6 +51,10 @@ chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, 
     if(result[KEY_CUSTOM_THEMES] != null){
         if(DEBUG) console.log(result[KEY_CUSTOM_THEMES]);
         customThemes = JSON.parse(result[KEY_CUSTOM_THEMES]);
+    }
+
+    if(result[KEY_DARK_LOADING] != null){
+        values[KEY_DARK_LOADING] = result[KEY_DARK_LOADING];
     }
 });
 
@@ -152,9 +160,32 @@ chrome.tabs.query({status: "complete"}, function(tabs){
 function insertCSS(tabId, theme){
     if(theme != null){
         chrome.tabs.insertCSS(tabId, {
-            code: 'html.tlvNightModeOn, html.tlvNightModeOn > body, html.tlvNightModeOn > body > *, html.tlvNightModeOn *:not([aria-hidden=true]).withBgColor:not(.withBgImage) {background-color: ' + theme.bgColor + ' !important;}html.tlvNightModeOn * {color: ' + theme.textColor + ' !important;border-color: ' + theme.borderColor + ' !important;box-shadow: none !important;}html.tlvNightModeOn ::selection {background: rgba(142,142,142,0.3) !important;}html.tlvNightModeOn a:link {color: ' + theme.linkColor + ' !important;}html.tlvNightModeOn a:visited {color: ' + theme.visitedLinkColor + ' !important;}html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {background-color: rgba(0,0,0,0) !important;/*-webkit-filter: brightness(100%) contrast(100%) !important;*/}'
+            code: 'html.tlvNightModeOn, html.tlvNightModeOn > body, html.tlvNightModeOn > body > *, html.tlvNightModeOn *:not([aria-hidden=true]).withBgColor:not(.withBgImage) {background-color: ' + theme.bgColor + ' !important;background-image: none !important;}html.tlvNightModeOn * {color: ' + theme.textColor + ' !important;border-color: ' + theme.borderColor + ' !important;box-shadow: none !important;}html.tlvNightModeOn ::selection {background: rgba(142,142,142,0.3) !important;}html.tlvNightModeOn a:link {color: ' + theme.linkColor + ' !important;}html.tlvNightModeOn a:visited {color: ' + theme.visitedLinkColor + ' !important;}html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {background-color: rgba(0,0,0,0) !important;/*-webkit-filter: brightness(100%) contrast(100%) !important;*/} html.tlvNightModeOn .fullscreenBgImage {background-image: none;}'
         });
     }
+}
+
+function insertImageConfig(tabId){
+    chrome.tabs.insertCSS(tabId, {
+        code: 'html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {-webkit-filter: brightness(' + values[KEY_BRIGHTNESS] + '%) contrast(' + values[KEY_CONTRAST] + '%) !important;}'
+    });
+}
+
+function insertImageConfigToAll(){
+    if(timerApplyAll){
+        clearTimeout(timerApplyAll);
+        timerApplyAll = null;
+    }
+    timerApplyAll = setTimeout(function(){
+        chrome.tabs.query({status: "complete"}, function(tabs){
+            for(var i=0;i<tabs.length;i++) {
+                // chrome.tabs.insertCSS(tabs[i].id, {
+                //     code: 'html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {-webkit-filter: brightness(' + bgPage.values[bgPage.KEY_BRIGHTNESS] + '%) contrast(' + bgPage.values[bgPage.KEY_CONTRAST] + '%) !important;}'
+                // });
+                insertImageConfig(tabs[i].id);
+            }
+        });
+    }, 2000);
 }
 
 chrome.tabs.onUpdated.addListener(function(tabsId, changeInfo, tab){
@@ -162,5 +193,6 @@ chrome.tabs.onUpdated.addListener(function(tabsId, changeInfo, tab){
     if(changeInfo.url && tab.url && !tab.url.startsWith("chrome://")){
         if(DEBUG) console.log("tabs.onUpdated do insert");
         insertCSS(tabsId, getTheme(currentThemeID));
+        insertImageConfig(tabsId);
     }
 });

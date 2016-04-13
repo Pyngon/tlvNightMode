@@ -25,7 +25,7 @@
     },
     "t4": {
         "name": "Theme 4",
-        "bgColor": "181712",
+        "bgColor": "#181712",
         "textColor": "#B0ABA0",
         "borderColor": "#F0F0F0",
         "linkColor": "#6ABEDB",

@@ -33,7 +33,15 @@
             <div>
                 <ul id="menuTheme" class="horizontalMenu"></ul>
             </div>
-            <h3>Your Themes</h3>
+            <div class="header">
+                <h3>Your Themes</h3>
+                <div class="helpTips">
+                    <p>
+                        You can customized your own theme. Right click to edit or delele the theme.
+                    </p>
+                </div>
+
+            </div>
             <div class="content">
                 <ul id="menuCustomTheme" class="horizontalMenu"></ul>
             </div>
@@ -76,7 +84,15 @@
             <table>
                 <tr>
                     <td>
-                        <label for="txtDepth">Depth</label>
+                        <div class="header">
+                            <label for="txtDepth">Depth</label>
+                            <div class="helpTips">
+                                <p>
+                                    Bigger number may have better effect but will be slower.<br/>
+                                    Have to reload the page to take effect after changes.
+                                </p>
+                            </div>
+                        </div>
                     </td>
                     <td>
                         <input type="range" id="sbDepth" min="0" max="100" value="20" />
@@ -87,7 +103,14 @@
                 </tr>
                 <tr>
                     <td colspan="2">
-                        <label for="chkbDarkStart">Dark at loading</label>
+                        <div class="header">
+                            <label for="chkbDarkStart">Dark at loading</label>
+                            <div class="helpTips">
+                                <p>
+                                    When enabled, reduce brightness on loading a new page.
+                                </p>
+                            </div>
+                        </div>
                     </td>
                     <td>
                         <input type="checkbox" id="chkbDarkStart" checked />

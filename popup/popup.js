@@ -1,5 +1,4 @@
 var bgPage = chrome.extension.getBackgroundPage();
-var brightnessTimer;
 var timer = {};
 var contextMenuId = "";
 
@@ -106,17 +105,34 @@ document.addEventListener("DOMContentLoaded", function(){
         }, 500);
     });
 
+    var chkbDarkStart = document.getElementById("chkbDarkStart");
+    if(bgPage.values[bgPage.KEY_DARK_LOADING] != 0){
+        chkbDarkStart.checked = true;
+    } else {
+        chkbDarkStart.checked = false;
+    }
+    chkbDarkStart.addEventListener("change", function(ev){
+        if(ev.target.checked){
+            bgPage.saveValue(bgPage.KEY_DARK_LOADING, 1);
+        } else {
+            bgPage.saveValue(bgPage.KEY_DARK_LOADING, 0);
+        }
+    });
+
     var linkAdvance = document.getElementById("linkAdvance");
     linkAdvance.addEventListener("click", function(ev){
         console.log(ev.target.innerText);
         var blockAdvance = document.getElementById("blockAdvance");
-        if(blockAdvance.style.display != "none"){
-            blockAdvance.style.display = "none";
-            ev.target.innerText = "Show Advance Settings"
-        } else {
+        if(blockAdvance.style.display == "none"){
             blockAdvance.style.display = "block";
-            ev.target.innerText = "Hide Advance Settings"
+            ev.target.style.display = "none";
+
+            // ev.target.innerText = "Hide Advance Settings";
         }
+        // else {
+        //     blockAdvance.style.display = "none";
+        //     ev.target.innerText = "Show Advance Settings"
+        // }
     });
 
 });
@@ -176,6 +192,7 @@ function changeImageConfiguration(key, newValue){
             });
         }
     });
+    bgPage.insertImageConfigToAll();
 }
 
 function renderThemeButton(id, theme){

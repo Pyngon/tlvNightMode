@@ -1,5 +1,6 @@
 html.tlvNightModeOn, html.tlvNightModeOn > body, html.tlvNightModeOn > body > *, html.tlvNightModeOn *:not([aria-hidden=true]).withBgColor:not(.withBgImage) {
     background-color: rgba(40,44,52,1) !important;
+    background-image: none !important;
 }
 
 html.tlvNightModeOn * {
@@ -23,4 +24,8 @@ html.tlvNightModeOn a:visited {
 html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {
     background-color: rgba(0,0,0,0) !important;
     /*-webkit-filter: brightness(100%) contrast(100%) !important;*/
+}
+
+html.tlvNightModeOn .fullscreenBgImage {
+    background-image: none;
 }
