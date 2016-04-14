@@ -28,20 +28,24 @@ document.addEventListener("DOMContentLoaded", function(){
         obj.linkColor = "#" + colorLink.value;
         obj.visitedLinkColor = "#" + colorVisitedLink.value;
         if(editId != null){
+            /* Editing theme */
             bgPage.saveTheme(editId, obj);
         } else {
+            /* Creating new theme */
             bgPage.addTheme(obj);
         }
 
         window.location.href = "./popup.html";
     });
 
-    console.log("location.search=" + window.location.search);
+    //console.log("location.search=" + window.location.search);
 });
 
+/**
+ * Initialize color from current theme.
+ */
 function initColor(){
     txtName = document.getElementById("txtName");
-
     colorBg = document.getElementById("colorBg");
     colorText = document.getElementById("colorText");
     colorBorder = document.getElementById("colorBorder");
@@ -53,6 +57,10 @@ function initColor(){
         id = editId;
     }
     var currentTheme = bgPage.getTheme(id);
+    if(currentTheme == null){
+        currentTheme = bgPage.preSetThemes["t1"];
+    }
+
     if(currentTheme){
         colorBg.value = currentTheme.bgColor;
         colorText.value = currentTheme.textColor;
@@ -66,6 +74,9 @@ function initColor(){
     }
 }
 
+/**
+ * Retrieve the id from url parameter
+ */
 function getEditId(variable){
     if(window.location.search){
         var query = window.location.search.substring(1);

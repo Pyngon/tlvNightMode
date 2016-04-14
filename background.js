@@ -1,5 +1,5 @@
+console.log("tlv night mode extension is enabled");
 var DEBUG = true;
-if(DEBUG) console.log("webcolor extension is enabled");
 
 var KEY_ENABLED = "isEnabled";
 var KEY_THEME_ID = "theme";
@@ -107,6 +107,10 @@ function deleteTheme(id){
     chrome.storage.local.set(obj);
 }
 
+/**
+ * Generate an uniqueID for a newly created theme.
+ * The format of the ID is ct[timestamp]-[1 to 5 digits random number]
+ */
 function getUniqueID(){
     var time = new Date().getTime();
     var randNum = Math.round(Math.random() * 10000);
@@ -122,9 +126,11 @@ function getTheme(themeId){
     if(DEBUG) console.log("getTheme id=" + themeId + "typeof=" + (typeof themeId));
     if(themeId){
         if(themeId.startsWith("t")){
+            /* Id of pre-defined theme will be started with "t" */
             if(DEBUG) console.log("preSetTheme");
             return preSetThemes[themeId];
         } else {
+            /* Id of user-defined theme will be started with "ct" */
             if(DEBUG) console.log("customThemes");
             return customThemes[themeId];
         }
@@ -132,6 +138,43 @@ function getTheme(themeId){
     return undefined;
 }
 
+/**
+ * Insert the css of the theme to the particular tab.
+ * @param tabId - Id of the tab to insert the theme.
+ * @param theme - the theme to be inserted.
+ */
+function insertCSS(tabId, theme){
+    if(theme != null){
+        chrome.tabs.insertCSS(tabId, {
+            code: 'html.tlvNightModeOn, html.tlvNightModeOn > body, html.tlvNightModeOn > body > *, html.tlvNightModeOn *:not([aria-hidden=true]).withBgColor:not(.withBgImage) {background-color: ' + theme.bgColor + ' !important;background-image: none !important;}html.tlvNightModeOn * {color: ' + theme.textColor + ' !important;border-color: ' + theme.borderColor + ' !important;box-shadow: none !important;}html.tlvNightModeOn ::selection {background: rgba(142,142,142,0.3) !important;}html.tlvNightModeOn a:link {color: ' + theme.linkColor + ' !important;}html.tlvNightModeOn a:visited {color: ' + theme.visitedLinkColor + ' !important;}html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {background-color: rgba(0,0,0,0) !important;/*-webkit-filter: brightness(100%) contrast(100%) !important;*/} html.tlvNightModeOn .fullscreenBgImage {background-image: none;}'
+        });
+    }
+}
+
+function insertImageConfig(tabId){
+    chrome.tabs.insertCSS(tabId, {
+        code: 'html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {-webkit-filter: brightness(' + values[KEY_BRIGHTNESS] + '%) contrast(' + values[KEY_CONTRAST] + '%) !important;}'
+    });
+}
+
+/**
+ * Insert the configuration to all tabs after 2 seconds delay.
+ */
+function insertImageConfigToAll(){
+    if(timerApplyAll){
+        clearTimeout(timerApplyAll);
+        timerApplyAll = null;
+    }
+    timerApplyAll = setTimeout(function(){
+        chrome.tabs.query({status: "complete"}, function(tabs){
+            for(var i=0;i<tabs.length;i++) {
+                insertImageConfig(tabs[i].id);
+            }
+        });
+    }, 2000);
+}
+
+/* Load pre defined themes. */
 var xhr = new XMLHttpRequest();
 xhr.onreadystatechange = function() {
     if(xhr.readyState == XMLHttpRequest.DONE && xhr.status == 200) {
@@ -156,37 +199,6 @@ chrome.tabs.query({status: "complete"}, function(tabs){
         }
     }
 });
-
-function insertCSS(tabId, theme){
-    if(theme != null){
-        chrome.tabs.insertCSS(tabId, {
-            code: 'html.tlvNightModeOn, html.tlvNightModeOn > body, html.tlvNightModeOn > body > *, html.tlvNightModeOn *:not([aria-hidden=true]).withBgColor:not(.withBgImage) {background-color: ' + theme.bgColor + ' !important;background-image: none !important;}html.tlvNightModeOn * {color: ' + theme.textColor + ' !important;border-color: ' + theme.borderColor + ' !important;box-shadow: none !important;}html.tlvNightModeOn ::selection {background: rgba(142,142,142,0.3) !important;}html.tlvNightModeOn a:link {color: ' + theme.linkColor + ' !important;}html.tlvNightModeOn a:visited {color: ' + theme.visitedLinkColor + ' !important;}html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {background-color: rgba(0,0,0,0) !important;/*-webkit-filter: brightness(100%) contrast(100%) !important;*/} html.tlvNightModeOn .fullscreenBgImage {background-image: none;}'
-        });
-    }
-}
-
-function insertImageConfig(tabId){
-    chrome.tabs.insertCSS(tabId, {
-        code: 'html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {-webkit-filter: brightness(' + values[KEY_BRIGHTNESS] + '%) contrast(' + values[KEY_CONTRAST] + '%) !important;}'
-    });
-}
-
-function insertImageConfigToAll(){
-    if(timerApplyAll){
-        clearTimeout(timerApplyAll);
-        timerApplyAll = null;
-    }
-    timerApplyAll = setTimeout(function(){
-        chrome.tabs.query({status: "complete"}, function(tabs){
-            for(var i=0;i<tabs.length;i++) {
-                // chrome.tabs.insertCSS(tabs[i].id, {
-                //     code: 'html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {-webkit-filter: brightness(' + bgPage.values[bgPage.KEY_BRIGHTNESS] + '%) contrast(' + bgPage.values[bgPage.KEY_CONTRAST] + '%) !important;}'
-                // });
-                insertImageConfig(tabs[i].id);
-            }
-        });
-    }, 2000);
-}
 
 chrome.tabs.onUpdated.addListener(function(tabsId, changeInfo, tab){
     if(DEBUG) console.log("tabs.onUpdated tabsId=" + tabsId + " url=" + tab.url + ", changeInfo.url=" + changeInfo.url);

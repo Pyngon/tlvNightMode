@@ -126,13 +126,7 @@ document.addEventListener("DOMContentLoaded", function(){
         if(blockAdvance.style.display == "none"){
             blockAdvance.style.display = "block";
             ev.target.style.display = "none";
-
-            // ev.target.innerText = "Hide Advance Settings";
         }
-        // else {
-        //     blockAdvance.style.display = "none";
-        //     ev.target.innerText = "Show Advance Settings"
-        // }
     });
 
 });
@@ -144,6 +138,10 @@ document.documentElement.addEventListener("click", function(ev){
     }
 });
 
+/**
+ * Send message to content scripts in all tabs when turning on or off this extension.
+ * @param isEnabled - true if turning on this extension, false otherwise
+ */
 function sendMessageToContentScript(isEnabled){
     chrome.tabs.query({status: "complete"}, function(tabs){
         console.log("tabs.length=" + tabs.length);
@@ -155,6 +153,16 @@ function sendMessageToContentScript(isEnabled){
     });
 }
 
+/**
+ * Setup listener for the slidebar and textbox for image configuration.
+ * This function is mainly to avoid writing duplicate code for Contrast and Brightness,
+ * since both of them share similar configuration setup.
+ * @param slidebar - input HTMLElement with type range.
+ * @param textbox - input HTMLElement with type text.
+ * @param key - The key of this image configuration, see background.js.
+ * @param minValue - The minimum value of the range.
+ * @param maxValue - the maximum value of the range.
+ */
 function setupImageConfiguration(slidebar, textbox, key, minValue, maxValue){
     slidebar.value = bgPage.values[key];
     textbox.value = bgPage.values[key];
@@ -183,6 +191,11 @@ function setupImageConfiguration(slidebar, textbox, key, minValue, maxValue){
     });
 }
 
+/**
+ * Insert CSS to current tab when user is changing the configuration.
+ * @param key - the key of the property that user is changing.
+ * @param newValue - The new value of the property.
+ */
 function changeImageConfiguration(key, newValue){
     bgPage.saveValue(key, newValue);
     chrome.tabs.query({active: true}, function(tabs){
@@ -199,9 +212,6 @@ function renderThemeButton(id, theme){
     var themeContentDiv = document.createElement("div");
     themeContentDiv.className = "themeContent";
     themeContentDiv.style = "border-color: " + theme.borderColor + "; background-color: " + theme.bgColor + ";";
-    // themeContentDiv.innerText = "A";
-    // themeContentDiv.id = id;
-    // themeContentDiv.addEventListener("click", changeTheme);
 
     var textSpan = document.createElement("span");
     textSpan.style = "color: " + theme.textColor + ";";
@@ -238,6 +248,10 @@ function renderThemeButton(id, theme){
     return item;
 }
 
+/**
+ * Listener of theme button, it will apply the theme to all complete loading tabs.
+ * @param ev - click event
+ */
 function changeTheme(ev){
     console.log("changeTheme target=" + this);
     console.log("changeTheme=" + this.id);
@@ -248,7 +262,6 @@ function changeTheme(ev){
         console.log("changeTheme tabs.length=" + tabs.length);
         for(var i=0;i<tabs.length;i++) {
             if(!tabs[i].url.startsWith("chrome://")){
-                // bgPage.insertCSS(tabs[i].id, bgPage.preSetThemes[bgPage.currentThemeID]);
                 bgPage.insertCSS(tabs[i].id, bgPage.getTheme(bgPage.currentThemeID));
             }
         }

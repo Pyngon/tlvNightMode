@@ -1,16 +1,16 @@
 {
     "manifest_version": 2,
     "name": "TLV Night Mode",
-    "version": "1.0",
+    "version": "1.0.0",
 
-    "description": "Display the web page in your favourite color.",
+    "description": "Change all websites to dark color scheme.",
     "icons": {
-        "48": "icons/coloring48.png",
-        "128": "icons/coloring.png"
+        "48": "icons/tlv_48.png",
+        "128": "icons/tlv.png"
     },
 
     "browser_action": {
-        "default_icon": "icons/coloring48.png",
+        "default_icon": "icons/tlv_48.png",
         "default_title": "Coloring",
         "default_popup": "popup/popup.html"
       },
@@ -38,11 +38,6 @@
         {
             "matches": ["<all_urls>"],
             "run_at": "document_end",
-            "js": ["recover.js"],
-            "all_frames": true
-        },
-        {
-            "matches": ["<all_urls>"],
             "js": ["changeColor.js"],
             "all_frames": true
         }
