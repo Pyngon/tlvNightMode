@@ -182,6 +182,14 @@ if(!pyngon.tlvCS){
                 document.documentElement.className += " tlvNightModeOn";
             },
 
+            hideBgImage: function(){
+                document.documentElement.className += " tlvHideBgImage";
+            },
+
+            showBgImage: function(){
+                document.documentElement.className = document.documentElement.className.replace(new RegExp('tlvHideBgImage', 'g'), '');
+            },
+
             startAnalyse: function(){
                 // Can not use "this". Because this function is invoked by setTimeout, this will become window.
                 pyngon.tlvCS.traceDOM(document.body);
@@ -212,11 +220,22 @@ chrome.storage.local.get("isEnabled", function(result){
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
         if(pyngon.DEBUG) console.log("received request=" + request.isEnable);
-        if (request.isEnable) {
-            pyngon.tlvCS.enable();
-        } else {
-            pyngon.tlvCS.disable();
+        if(request.isEnable != undefined){
+            if (request.isEnable) {
+                pyngon.tlvCS.enable();
+            } else {
+                pyngon.tlvCS.disable();
+            }
         }
+
+        if(request.isHideBgImage != undefined){
+            if (request.isHideBgImage) {
+                pyngon.tlvCS.hideBgImage();
+            } else {
+                pyngon.tlvCS.showBgImage();
+            }
+        }
+
         sendResponse({status: "ok1"});
     }
 );

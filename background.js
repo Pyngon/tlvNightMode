@@ -8,6 +8,7 @@ var KEY_CONTRAST = "contrast";
 var KEY_DEPTH = "depth";
 var KEY_CUSTOM_THEMES = "customThemes";
 var KEY_DARK_LOADING = "darkLoading";
+var KEY_HIDE_BGIAMGE = "hideBgImage";
 
 var MIN_BRIGHTNESS = 0;
 var MAX_BRIGHTNESS = 200;
@@ -22,6 +23,7 @@ values[KEY_BRIGHTNESS] = 100;
 values[KEY_CONTRAST] = 100;
 values[KEY_DEPTH] = 25;
 values[KEY_DARK_LOADING] = 1;
+values[KEY_HIDE_BGIAMGE] = 1;
 
 var currentThemeID = "";
 var preSetThemes;
@@ -29,7 +31,7 @@ var customThemes = {};
 
 var timerApplyAll;
 
-chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, KEY_THEME_ID, KEY_CUSTOM_THEMES, KEY_DARK_LOADING], function(result){
+chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, KEY_THEME_ID, KEY_CUSTOM_THEMES, KEY_DARK_LOADING, KEY_HIDE_BGIAMGE], function(result){
     if(result[KEY_ENABLED] != 0){
         values[KEY_ENABLED] = result[KEY_ENABLED];
     }
@@ -55,6 +57,10 @@ chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, 
 
     if(result[KEY_DARK_LOADING] != null){
         values[KEY_DARK_LOADING] = result[KEY_DARK_LOADING];
+    }KEY_HIDE_BGIAMGE
+
+    if(result[KEY_HIDE_BGIAMGE] != null){
+        values[KEY_HIDE_BGIAMGE] = result[KEY_DARK_LOADING];
     }
 });
 
@@ -146,7 +152,7 @@ function getTheme(themeId){
 function insertCSS(tabId, theme){
     if(theme != null){
         chrome.tabs.insertCSS(tabId, {
-            code: 'html.tlvNightModeOn, html.tlvNightModeOn > body, html.tlvNightModeOn > body > *, html.tlvNightModeOn *:not([aria-hidden=true]).withBgColor:not(.withBgImage) {background-color: ' + theme.bgColor + ' !important;background-image: none !important;}html.tlvNightModeOn * {color: ' + theme.textColor + ' !important;border-color: ' + theme.borderColor + ' !important;box-shadow: none !important;}html.tlvNightModeOn ::selection {background: rgba(142,142,142,0.3) !important;}html.tlvNightModeOn a:link {color: ' + theme.linkColor + ' !important;}html.tlvNightModeOn a:visited {color: ' + theme.visitedLinkColor + ' !important;}html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {background-color: rgba(0,0,0,0) !important;/*-webkit-filter: brightness(100%) contrast(100%) !important;*/} html.tlvNightModeOn .fullscreenBgImage {background-image: none;}'
+            code: 'html.tlvNightModeOn, html.tlvNightModeOn > body, html.tlvNightModeOn > body > *, html.tlvNightModeOn *:not([aria-hidden=true]).withBgColor:not(.withBgImage) {background-color: ' + theme.bgColor + ' !important;}html.tlvNightModeOn * {color: ' + theme.textColor + ' !important;border-color: ' + theme.borderColor + ' !important;box-shadow: none !important;}html.tlvNightModeOn ::selection {background: rgba(142,142,142,0.3) !important;}html.tlvNightModeOn a:link {color: ' + theme.linkColor + ' !important;}html.tlvNightModeOn a:visited {color: ' + theme.visitedLinkColor + ' !important;}html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {background-color: rgba(0,0,0,0) !important;}'
         });
     }
 }

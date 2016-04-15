@@ -60,10 +60,10 @@ document.addEventListener("DOMContentLoaded", function(){
 
             if(!ev.target.checked && result[bgPage.KEY_ENABLED] != 0){
                 bgPage.saveValue(bgPage.KEY_ENABLED, 0);
-                sendMessageToContentScript(false);
+                sendMessageToContentScript("isEnable", false);
             } else if(ev.target.checked && result[bgPage.KEY_ENABLED] == 0){
                 bgPage.saveValue(bgPage.KEY_ENABLED, 1);
-                sendMessageToContentScript(true);
+                sendMessageToContentScript("isEnable", true);
             }
         });
     });
@@ -119,6 +119,22 @@ document.addEventListener("DOMContentLoaded", function(){
         }
     });
 
+    var chkbHideBgImage = document.getElementById("chkbHideBgImage");
+    if(bgPage.values[bgPage.KEY_HIDE_BGIAMGE] == 1){
+        chkbHideBgImage.checked = true;
+    } else {
+        chkbHideBgImage.checked = false;
+    }
+    chkbHideBgImage.addEventListener("change", function(ev){
+        if(ev.target.checked){
+            bgPage.saveValue(bgPage.KEY_HIDE_BGIAMGE, 1);
+            sendMessageToContentScript("isHideBgImage", true);
+        } else {
+            bgPage.saveValue(bgPage.KEY_HIDE_BGIAMGE, 0);
+            sendMessageToContentScript("isHideBgImage", false);
+        }
+    });
+
     var linkAdvance = document.getElementById("linkAdvance");
     linkAdvance.addEventListener("click", function(ev){
         console.log(ev.target.innerText);
@@ -142,11 +158,13 @@ document.documentElement.addEventListener("click", function(ev){
  * Send message to content scripts in all tabs when turning on or off this extension.
  * @param isEnabled - true if turning on this extension, false otherwise
  */
-function sendMessageToContentScript(isEnabled){
+function sendMessageToContentScript(key, value){
     chrome.tabs.query({status: "complete"}, function(tabs){
         console.log("tabs.length=" + tabs.length);
         for(var i=0;i<tabs.length;i++) {
-            chrome.tabs.sendMessage(tabs[i].id, {isEnable: isEnabled}, function(response){
+            var obj = {};
+            obj[key] = value;
+            chrome.tabs.sendMessage(tabs[i].id, obj, function(response){
                 console.log("contentScript is done.");
             });
         }
