@@ -57,7 +57,7 @@ chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, 
 
     if(result[KEY_DARK_LOADING] != null){
         values[KEY_DARK_LOADING] = result[KEY_DARK_LOADING];
-    }KEY_HIDE_BGIAMGE
+    }
 
     if(result[KEY_HIDE_BGIAMGE] != null){
         values[KEY_HIDE_BGIAMGE] = result[KEY_DARK_LOADING];

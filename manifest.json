@@ -3,7 +3,7 @@
     "name": "TLV Night Mode",
     "version": "1.0.2",
 
-    "description": "Change all websites to dark color scheme.",
+    "description": "Convert all websites to dark color scheme.",
     "icons": {
         "48": "icons/tlv_48.png",
         "128": "icons/tlv.png"
