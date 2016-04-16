@@ -59,7 +59,7 @@ if(!pyngon.tlvCS){
 
             var computedStyle = window.getComputedStyle(node);
 
-            if(node.offsetWidth/window.innerWidth > 0.8 && node.offsetHeight/window.innerHeight > 0.8){
+            if(node.offsetWidth/window.innerWidth > 0.6 && node.offsetHeight/window.innerHeight > 0.6){
                 if(!node.className || !node.className.includes("fullscreenBgImage")){
                     node.className += " fullscreenBgImage";
                 }

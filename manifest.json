@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "TLV Night Mode",
-    "version": "1.0.0",
+    "version": "1.0.2",
 
     "description": "Change all websites to dark color scheme.",
     "icons": {
