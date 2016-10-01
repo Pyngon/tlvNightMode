@@ -8,6 +8,7 @@ if(!pyngon.tlvCS){
         var newStyleElement;
         var maxDepth = 25;
         var startDelay;
+        var isAnalyzed = false;
 
         function observeBody(body){
             var bodyMutationObserver = new MutationObserver(function(records){
@@ -39,7 +40,6 @@ if(!pyngon.tlvCS){
 
             if(node.nodeType == Node.ELEMENT_NODE){
                 tagElement(node);
-
             }
             if(checkChild){
                 var childNodes = node.childNodes;
@@ -180,6 +180,9 @@ if(!pyngon.tlvCS){
 
             enable: function(){
                 document.documentElement.className += " tlvNightModeOn";
+                if(!isAnalyzed){
+                    pyngon.tlvCS.run();
+                }
             },
 
             hideBgImage: function(){
@@ -195,6 +198,8 @@ if(!pyngon.tlvCS){
                 pyngon.tlvCS.traceDOM(document.body);
                 observeBody(document.body);
                 backToNormalBrightness();
+
+                isAnalyzed = true;
             },
 
             run: function(){
@@ -212,8 +217,11 @@ if(!pyngon.tlvCS){
 
 chrome.storage.local.get("isEnabled", function(result){
     if(pyngon.DEBUG) console.log("local.get=" + result["isEnabled"]);
-    if(result["isEnabled"] != 0 && !document.documentElement.className.includes("tlvNightModeOn")){
-        document.documentElement.className += " tlvNightModeOn";
+    if(result["isEnabled"] != 0){
+        if(!document.documentElement.className.includes("tlvNightModeOn")){
+            document.documentElement.className += " tlvNightModeOn";
+        }
+        pyngon.tlvCS.run();
     }
 });
 
@@ -240,4 +248,4 @@ chrome.runtime.onMessage.addListener(
     }
 );
 
-pyngon.tlvCS.run();
+//pyngon.tlvCS.run();

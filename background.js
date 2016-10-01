@@ -1,5 +1,5 @@
 console.log("tlv night mode extension is enabled");
-var DEBUG = true;
+var DEBUG = false;
 
 var KEY_ENABLED = "isEnabled";
 var KEY_THEME_ID = "theme";
@@ -32,7 +32,7 @@ var customThemes = {};
 var timerApplyAll;
 
 chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, KEY_THEME_ID, KEY_CUSTOM_THEMES, KEY_DARK_LOADING, KEY_HIDE_BGIAMGE], function(result){
-    if(result[KEY_ENABLED] != 0){
+    if(result[KEY_ENABLED] != null){
         values[KEY_ENABLED] = result[KEY_ENABLED];
     }
 
