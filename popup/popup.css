@@ -90,8 +90,16 @@ button:hover {
 	top: -12px;
 }
 
+#chkWhitelist, #lblWhitelist {
+    vertical-align: middle;
+}
+
+#lblWhitelist {
+    font-size: 1.2em;
+}
+
 .onoffswitch {
-    left: 200px;
+    left: 100px;
 }
 
 .horizontalMenu {

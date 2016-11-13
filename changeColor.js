@@ -1,5 +1,5 @@
 var pyngon = pyngon || {};
-pyngon.DEBUG = false;
+pyngon.DEBUG = true;
 
 if(!pyngon.tlvCS){
 
@@ -95,7 +95,7 @@ if(!pyngon.tlvCS){
                     if(brightness && brightness.length > 0){
                         var intBrightness = parseInt(brightness[1]);
                         if(intBrightness < 100){
-                            var inc = Math.min(intBrightness + 2, 100);
+                            var inc = Math.min(intBrightness + 4, 100);
                             document.documentElement.style.webkitFilter = "brightness(" + inc + "%)";
                         } else {
                             document.documentElement.style.webkitFilter = "";
@@ -215,9 +215,22 @@ if(!pyngon.tlvCS){
 
 }
 
-chrome.storage.local.get("isEnabled", function(result){
-    if(pyngon.DEBUG) console.log("local.get=" + result["isEnabled"]);
-    if(result["isEnabled"] != 0){
+// chrome.storage.local.get("isEnabled", function(result){
+//     if(pyngon.DEBUG) console.log("local.get=" + result["isEnabled"]);
+//     if(result["isEnabled"] != 0) {
+//         chrome.runtime.sendMessage({action: "isChangeColor"}, function(response) {
+//             if(response.data == true) {
+//                 if(!document.documentElement.className.includes("tlvNightModeOn")){
+//                     document.documentElement.className += " tlvNightModeOn";
+//                 }
+//                 pyngon.tlvCS.run();
+//             }
+//         });
+//     }
+// });
+
+chrome.runtime.sendMessage({action: "isChangeColor"}, function(response) {
+    if(response.data == true) {
         if(!document.documentElement.className.includes("tlvNightModeOn")){
             document.documentElement.className += " tlvNightModeOn";
         }
@@ -227,17 +240,44 @@ chrome.storage.local.get("isEnabled", function(result){
 
 chrome.runtime.onMessage.addListener(
     function(request, sender, sendResponse) {
-        if(pyngon.DEBUG) console.log("received request=" + request.isEnable);
-        if(request.isEnable != undefined){
-            if (request.isEnable) {
-                pyngon.tlvCS.enable();
-            } else {
-                pyngon.tlvCS.disable();
-            }
-        }
+        if(pyngon.DEBUG) {
+            console.log("received request");
+            console.log(request);
+        } 
+        // if(request.isEnable != undefined){
+        //     if (request.isEnable) {
+        //         pyngon.tlvCS.enable();
+        //     } else {
+        //         pyngon.tlvCS.disable();
+        //     }
+        // }
 
-        if(request.isHideBgImage != undefined){
-            if (request.isHideBgImage) {
+        // if(request.isHideBgImage != undefined){
+        //     if (request.isHideBgImage) {
+        //         pyngon.tlvCS.hideBgImage();
+        //     } else {
+        //         pyngon.tlvCS.showBgImage();
+        //     }
+        // }
+        if(request.action == "changeColor") {
+
+            // if(request.data == true) {
+            //     pyngon.tlvCS.enable();
+            // } else {
+            //     pyngon.tlvCS.disable();
+            // }
+
+            chrome.runtime.sendMessage({action: "isChangeColor"}, function(response) {
+                if(response.data == true) {
+                    pyngon.tlvCS.enable();
+                } else {
+                    pyngon.tlvCS.disable();
+                }
+            });
+
+        } else if(request.action == "hideBgImage") {
+
+            if(request.data == true) {
                 pyngon.tlvCS.hideBgImage();
             } else {
                 pyngon.tlvCS.showBgImage();

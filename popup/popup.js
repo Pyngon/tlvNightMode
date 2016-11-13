@@ -1,21 +1,22 @@
 var bgPage = chrome.extension.getBackgroundPage();
+var DEBUG = bgPage.DEBUG;
 var timer = {};
 var contextMenuId = "";
 
 /* page event */
-document.addEventListener("DOMContentLoaded", function(){
+document.addEventListener("DOMContentLoaded", function() {
     var item;
 
     /* init pre-set theme */
     var menu = document.getElementById("menuTheme");
-    for(var i in bgPage.preSetThemes){
+    for(var i in bgPage.preSetThemes) {
         item = renderThemeButton(i, bgPage.preSetThemes[i]);
         menu.appendChild(item);
     }
 
     /* init custom themes */
     var customThemesMenu = document.getElementById("menuCustomTheme");
-    for(var i in bgPage.customThemes){
+    for(var i in bgPage.customThemes) {
         console.log("custom Theme=" + i + ", bgColor=" + bgPage.customThemes[i].bgColor);
         item = renderThemeButton(i, bgPage.customThemes[i]);
         item.addEventListener("contextmenu", customThemeRightClick);
@@ -55,17 +56,57 @@ document.addEventListener("DOMContentLoaded", function(){
         chkbOnOff.checked = false;
     }
     chkbOnOff.addEventListener("change", function(ev){
-        chrome.storage.local.get(bgPage.KEY_ENABLED, function(result){
+        chrome.storage.local.get(bgPage.KEY_ENABLED, function(result) {
             console.log("local.get=" + result[bgPage.KEY_ENABLED]);
 
-            if(!ev.target.checked && result[bgPage.KEY_ENABLED] != 0){
+            if(!ev.target.checked && result[bgPage.KEY_ENABLED] != 0) {
                 bgPage.saveValue(bgPage.KEY_ENABLED, 0);
-                sendMessageToContentScript("isEnable", false);
-            } else if(ev.target.checked && result[bgPage.KEY_ENABLED] == 0){
+                // sendMessageToAllContentScript("isEnable", false);
+                sendMessageToAllContentScript({action: "changeColor"});
+            } else if(ev.target.checked && result[bgPage.KEY_ENABLED] == 0) {
                 bgPage.saveValue(bgPage.KEY_ENABLED, 1);
-                sendMessageToContentScript("isEnable", true);
+                // sendMessageToAllContentScript("isEnable", true);
+                sendMessageToAllContentScript({action: "changeColor"});
             }
         });
+    });
+
+    /* init whitelist */
+    var chkWhitelist = document.getElementById("chkWhitelist");
+    var lblWhitelist = document.getElementById("lblWhitelist");
+    if(bgPage.values[bgPage.KEY_WHITELIST_OPTIONS] == 1) {
+        lblWhitelist.innerText = "Include";
+    } else {
+        lblWhitelist.innerText = "Exclude";
+    }
+    getActiveTabUrl(function(url) {
+        if(bgPage.isInWhitelist(url)) {
+            chkWhitelist.checked = true;
+        } else {
+            chkWhitelist.checked = false;
+        }
+    });
+    chkWhitelist.addEventListener("change", function(ev) {
+        getActiveTabUrl(function(url) {
+            if(ev.target.checked) {
+                bgPage.addWhitelist(url);
+            } else {
+                bgPage.deleteFromWhitelist(url);
+            }
+
+            if((ev.target.checked && bgPage.values[bgPage.KEY_WHITELIST_OPTIONS] == 1)
+                || (!ev.target.checked && bgPage.values[bgPage.KEY_WHITELIST_OPTIONS] == 0)) {
+                sendMessageToActiveContentScript({action: "changeColor"});
+            } else {
+                sendMessageToActiveContentScript({action: "changeColor"});
+            }
+
+        });
+    });
+
+    var btnWhitelistSettings = document.getElementById("btnWhitelistSettings");
+    btnWhitelistSettings.addEventListener("click", function(ev) {
+        window.location.href = "./whitelist/whitelist.html";
     });
 
     /* init image configuration */
@@ -125,13 +166,15 @@ document.addEventListener("DOMContentLoaded", function(){
     } else {
         chkbHideBgImage.checked = false;
     }
-    chkbHideBgImage.addEventListener("change", function(ev){
-        if(ev.target.checked){
+    chkbHideBgImage.addEventListener("change", function(ev) {
+        if(ev.target.checked) {
             bgPage.saveValue(bgPage.KEY_HIDE_BGIAMGE, 1);
-            sendMessageToContentScript("isHideBgImage", true);
+            // sendMessageToAllContentScript("isHideBgImage", true);
+            sendMessageToAllContentScript({action: "hideBgImage", data: true});
         } else {
             bgPage.saveValue(bgPage.KEY_HIDE_BGIAMGE, 0);
-            sendMessageToContentScript("isHideBgImage", false);
+            // sendMessageToAllContentScript("isHideBgImage", false);
+            sendMessageToAllContentScript({action: "hideBgImage", data: false});
         }
     });
 
@@ -154,20 +197,55 @@ document.documentElement.addEventListener("click", function(ev){
     }
 });
 
+function getActiveTabUrl(callback) {
+    chrome.tabs.query({currentWindow:true, active: true}, function(tabs) {
+        if(tabs != null && tabs.length > 0) {
+            callback(tabs[0].url);
+            // var hostRegex = /:\/\/([^\/?]+)/g;
+            // var matches = hostRegex.exec(tabs[0].url);
+            // if(matches != null && matches.length > 1) {
+            //     if(DEBUG) console.log("host=" + matches[1]);
+            //     callback(matches[1]);
+            // }
+        }
+        //callback(null);
+    });
+}
+
 /**
  * Send message to content scripts in all tabs when turning on or off this extension.
- * @param isEnabled - true if turning on this extension, false otherwise
  */
-function sendMessageToContentScript(key, value){
+function sendMessageToAllContentScript(obj){
     chrome.tabs.query({status: "complete"}, function(tabs){
-        console.log("tabs.length=" + tabs.length);
+        if(DEBUG) console.log("tabs.length=" + tabs.length);
         for(var i=0;i<tabs.length;i++) {
-            var obj = {};
-            obj[key] = value;
-            chrome.tabs.sendMessage(tabs[i].id, obj, function(response){
-                console.log("contentScript is done.");
-            });
+            // var obj = {};
+            // obj[key] = value;
+            // chrome.tabs.sendMessage(tabs[i].id, obj, function(response){
+            //     if(DEBUG) console.log("contentScript is done.");
+            // });
+            sendMessageToTab(tabs[i], obj);
         }
+    });
+}
+
+function sendMessageToActiveContentScript(obj) {
+    chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
+        console.log(tabs);
+        for(var i=0;i<tabs.length;i++) {
+            // var obj = {};
+            // obj[key] = value;
+            // chrome.tabs.sendMessage(tabs[i].id, obj, function(response){
+            //     console.log("contentScript is done.");
+            // });
+            sendMessageToTab(tabs[i], obj);
+        }
+    });
+}
+
+function sendMessageToTab(tab, message) {
+    chrome.tabs.sendMessage(tab.id, message, function(response){
+        if(DEBUG) console.log("send message to content script completed.");
     });
 }
 

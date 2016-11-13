@@ -1,0 +1,7 @@
+#divWhitelistOptions {
+    margin: 5px;
+}
+#divWhitelistOptions input, #divWhitelistOptions label {
+    vertical-align: middle;
+    font-size: 1.2em;
+}

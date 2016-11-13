@@ -1,5 +1,4 @@
-console.log("tlv night mode extension is enabled");
-var DEBUG = false;
+var DEBUG = true;
 
 var KEY_ENABLED = "isEnabled";
 var KEY_THEME_ID = "theme";
@@ -9,6 +8,9 @@ var KEY_DEPTH = "depth";
 var KEY_CUSTOM_THEMES = "customThemes";
 var KEY_DARK_LOADING = "darkLoading";
 var KEY_HIDE_BGIAMGE = "hideBgImage";
+
+var KEY_WHITELIST_OPTIONS = "whitelist_options";
+var KEY_WHITELIST = "whitelist";
 
 var MIN_BRIGHTNESS = 0;
 var MAX_BRIGHTNESS = 200;
@@ -24,29 +26,36 @@ values[KEY_CONTRAST] = 100;
 values[KEY_DEPTH] = 25;
 values[KEY_DARK_LOADING] = 1;
 values[KEY_HIDE_BGIAMGE] = 1;
+values[KEY_WHITELIST_OPTIONS] = 0; /* 0 mean exclude whitelist, 1 mean include whitelist. */
 
 var currentThemeID = "";
 var preSetThemes;
 var customThemes = {};
+var whitelist = {};
 
 var timerApplyAll;
 
-chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, KEY_THEME_ID, KEY_CUSTOM_THEMES, KEY_DARK_LOADING, KEY_HIDE_BGIAMGE], function(result){
-    if(result[KEY_ENABLED] != null){
-        values[KEY_ENABLED] = result[KEY_ENABLED];
-    }
+chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, KEY_THEME_ID, KEY_CUSTOM_THEMES, KEY_DARK_LOADING, KEY_HIDE_BGIAMGE, KEY_WHITELIST, KEY_WHITELIST_OPTIONS], function(result) {
+    // if(result[KEY_ENABLED] != null){
+    //     values[KEY_ENABLED] = result[KEY_ENABLED];
+    // }
 
-    if(result[KEY_BRIGHTNESS] != null){
-        values[KEY_BRIGHTNESS] = result[KEY_BRIGHTNESS];
-    }
+    // if(result[KEY_BRIGHTNESS] != null){
+    //     values[KEY_BRIGHTNESS] = result[KEY_BRIGHTNESS];
+    // }
 
-    if(result[KEY_CONTRAST] != null){
-        values[KEY_CONTRAST] = result[KEY_CONTRAST];
-    }
+    // if(result[KEY_CONTRAST] != null){
+    //     values[KEY_CONTRAST] = result[KEY_CONTRAST];
+    // }
 
-    if(result[KEY_DEPTH] != null){
-        values[KEY_DEPTH] = result[KEY_DEPTH];
-    }
+    // if(result[KEY_DEPTH] != null){
+    //     values[KEY_DEPTH] = result[KEY_DEPTH];
+    // }
+
+    setValueFromResultIfNotNull(KEY_ENABLED, result);
+    setValueFromResultIfNotNull(KEY_BRIGHTNESS, result);
+    setValueFromResultIfNotNull(KEY_CONTRAST, result);
+    setValueFromResultIfNotNull(KEY_DEPTH, result);
 
     currentThemeID = result[KEY_THEME_ID];
 
@@ -55,20 +64,98 @@ chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, 
         customThemes = JSON.parse(result[KEY_CUSTOM_THEMES]);
     }
 
-    if(result[KEY_DARK_LOADING] != null){
-        values[KEY_DARK_LOADING] = result[KEY_DARK_LOADING];
+    // if(result[KEY_DARK_LOADING] != null){
+    //     values[KEY_DARK_LOADING] = result[KEY_DARK_LOADING];
+    // }
+
+    // if(result[KEY_HIDE_BGIAMGE] != null){
+    //     values[KEY_HIDE_BGIAMGE] = result[KEY_DARK_LOADING];
+    // }
+
+    // if(result[KEY_WHITELIST_OPTIONS] != null) {
+    //     values[KEY_WHITELIST_OPTIONS] = result[KEY_WHITELIST_OPTIONS];
+    // }
+
+    setValueFromResultIfNotNull(KEY_DARK_LOADING, result);
+    setValueFromResultIfNotNull(KEY_HIDE_BGIAMGE, result);
+    setValueFromResultIfNotNull(KEY_WHITELIST_OPTIONS, result);
+
+    if(result[KEY_WHITELIST] != null){
+        whitelist = JSON.parse(result[KEY_WHITELIST]);
     }
 
-    if(result[KEY_HIDE_BGIAMGE] != null){
-        values[KEY_HIDE_BGIAMGE] = result[KEY_DARK_LOADING];
-    }
 });
+
+function setValueFromResultIfNotNull(key, result) {
+    if(result[key] != null){
+        values[key] = result[key];
+    }
+}
 
 function saveValue(key, value){
     values[key] = value;
     var obj = {};
     obj[key] = value;
     chrome.storage.local.set(obj);
+}
+
+function isChangeColor(url) {
+    if(values[KEY_ENABLED] == true) {
+        var inWhitelist = isInWhitelist(url);
+        if((inWhitelist && values[KEY_WHITELIST_OPTIONS] == 1)
+            || (!inWhitelist && values[KEY_WHITELIST_OPTIONS] == 0)) {
+                return true;
+        }
+    }
+    return false;
+}
+
+function isInWhitelist(url) {
+    host = getHostFromUrl(url);
+    if(host && host in whitelist){
+        return true;
+    }
+    return false;
+}
+
+function addWhitelist(url) {
+    host = getHostFromUrl(url);
+    if(host) {
+        whitelist[host] = true;
+        var stringifyWhitelist = JSON.stringify(whitelist);
+        if(DEBUG) console.log(stringifyWhitelist);
+
+        var obj = {};
+        obj[KEY_WHITELIST] = stringifyWhitelist;
+        chrome.storage.local.set(obj);
+        return true;
+    }
+    return false;
+}
+
+function deleteFromWhitelist(url) {
+    host = getHostFromUrl(url);
+    if(host) {
+        delete whitelist[host];
+        var stringifyWhitelist = JSON.stringify(whitelist);
+        if(DEBUG) console.log(stringifyWhitelist);
+        
+        var obj = {};
+        obj[KEY_WHITELIST] = stringifyWhitelist;
+        chrome.storage.local.set(obj);
+    }
+}
+
+function getHostFromUrl(url) {
+    if(url) {
+        var hostRegex = /:\/\/([^\/?]+)/g;
+        var matches = hostRegex.exec(url);
+        if(matches != null && matches.length > 1) {
+            if(DEBUG) console.log("host=" + matches[1]);
+            return matches[1];
+        }
+    }
+    return url;
 }
 
 /**
@@ -117,7 +204,7 @@ function deleteTheme(id){
  * Generate an uniqueID for a newly created theme.
  * The format of the ID is ct[timestamp]-[1 to 5 digits random number]
  */
-function getUniqueID(){
+function getUniqueID() {
     var time = new Date().getTime();
     var randNum = Math.round(Math.random() * 10000);
     var id = "ct" + time + "-" + randNum;
@@ -128,7 +215,7 @@ function getUniqueID(){
 /**
  * @return return the theme object of the id.
  */
-function getTheme(themeId){
+function getTheme(themeId) {
     if(DEBUG) console.log("getTheme id=" + themeId + "typeof=" + (typeof themeId));
     if(themeId){
         if(themeId.startsWith("t")){
@@ -146,7 +233,7 @@ function getTheme(themeId){
 
 /**
  * Insert the css of the theme to the particular tab.
- * @param tabId - Id of the tab to insert the theme.
+ * @param tabId - Id of the tab to insert the theme.    
  * @param theme - the theme to be inserted.
  */
 function insertCSS(tabId, theme){
@@ -206,11 +293,27 @@ chrome.tabs.query({status: "complete"}, function(tabs){
     }
 });
 
-chrome.tabs.onUpdated.addListener(function(tabsId, changeInfo, tab){
-    if(DEBUG) console.log("tabs.onUpdated tabsId=" + tabsId + " url=" + tab.url + ", changeInfo.url=" + changeInfo.url);
-    if(changeInfo.url && tab.url && !tab.url.startsWith("chrome://")){
+chrome.tabs.onUpdated.addListener(function(tabsId, changeInfo, tab) {
+    if(DEBUG) {
+        console.log("tabs.onUpdated tabsId=" + tabsId + " url=" + tab.url + ", changeInfo.url=" + changeInfo.url);
+        console.log(changeInfo);
+    } 
+    //if(changeInfo.url && tab.url && !tab.url.startsWith("chrome://")){
+    if(changeInfo.status && changeInfo.status == "loading") {
         if(DEBUG) console.log("tabs.onUpdated do insert");
         insertCSS(tabsId, getTheme(currentThemeID));
         insertImageConfig(tabsId);
+    }
+    //}
+});
+
+chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
+    if(DEBUG) {
+        console.log("background runtime onMessage");
+        console.log(request);
+    }
+    if (request.action == "isChangeColor") {
+        var isChange = isChangeColor(sender.tab.url);
+        sendResponse({data: isChange});
     }
 });

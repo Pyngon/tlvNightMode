@@ -1,0 +1,39 @@
+<html>
+    <head>
+        <link href="../popup.css" rel="stylesheet" type="text/css" />
+        <link href="whitelist.css" rel="stylesheet" type="text/css" />
+        <script type="text/javascript" src="whitelist.js"></script>
+    </head>
+    <body>
+        <div class="configGroup">
+            <button id="btnBack">&#8617 Back</button>
+        </div>
+        <hr>
+        <div class="configGroup">
+            <div class="header">
+                <h2>Options</h2>
+                <div class="helpTips">
+                    <p>
+                        Select whether TLV color themes should be applied to 
+                        web sites in this list only or web sites not in this list.
+                    </p>
+                </div>
+            </div>
+            <div id="divWhitelistOptions">
+                <input type="radio" name="whitelistOption" value="0" id="radExclude" checked />
+                <label>Exclude</label>
+                <input type="radio" name="whitelistOption" value="1" id="radInclude" />
+                <label>Include</label>
+            </div>
+        </div>
+        
+        <hr>
+        <div class="configGroup">
+            <div>
+                <table id="tblWhitelist">
+                </table>
+            </div>
+        </div>
+        
+    </body>
+</html>

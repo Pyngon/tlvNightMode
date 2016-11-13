@@ -3,17 +3,28 @@ var originalColor = document.documentElement.style.color;
 // document.documentElement.className += ' tlvNightModeOn';
 document.documentElement.style.color = "#ABB2BF";
 
-chrome.storage.local.get("isEnabled", function(result){
-    if(result["isEnabled"] == 0){
-        // document.documentElement.className = document.documentElement.className.replace(new RegExp('tlvNightModeOn', 'g'), '');
-        document.documentElement.style.color = originalColor;
-        // document.documentElement.style.webkitFilter = originalWebkitFilter;
-    } else {
+// chrome.storage.local.get("isEnabled", function(result){
+//     if(result["isEnabled"] == 0) {
+//         // document.documentElement.className = document.documentElement.className.replace(new RegExp('tlvNightModeOn', 'g'), '');
+//         document.documentElement.style.color = originalColor;
+//         // document.documentElement.style.webkitFilter = originalWebkitFilter;
+//     } else {
 
+//         chrome.storage.local.get("darkLoading", darkLoadingCallback);
+//         chrome.runtime.sendMessage({action: "injectCSS"}, function(response) {
+//             // Do nothing
+//         });
+//     }
+// });
+
+chrome.runtime.sendMessage({action: "isChangeColor"}, function(response) {
+    if(response.data == false) {
+        document.documentElement.style.color = originalColor;
+    } else {
         chrome.storage.local.get("darkLoading", darkLoadingCallback);
-        chrome.runtime.sendMessage({action: "injectCSS"}, function(response) {
-            // Do nothing
-        });
+        // chrome.runtime.sendMessage({action: "injectCSS"}, function(response) {
+        //     // Do nothing
+        // });
     }
 });
 

@@ -7,14 +7,28 @@
     </head>
     <body>
         <div class="configGroup">
-            <!-- <button id="btnEnable" type="button">Enabled</button> -->
-            <div class="onoffswitch">
-                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="chkbOnOff" checked />
-                <label class="onoffswitch-label" for="chkbOnOff">
-                    <span class="onoffswitch-inner"></span>
-                    <span class="onoffswitch-switch"></span>
-                </label>
-            </div>
+            <table>
+                <tr>
+                    <td align="center">
+                        <input type="checkbox" name="whitelist" id="chkWhitelist" />
+                        <label id="lblWhitelist">Exclude</label>
+                    </td>
+                    <td>
+                        <div class="onoffswitch">
+                            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="chkbOnOff" checked />
+                            <label class="onoffswitch-label" for="chkbOnOff">
+                                <span class="onoffswitch-inner"></span>
+                                <span class="onoffswitch-switch"></span>
+                            </label>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <hr>
+        <div class="configGroup">
+            <button id="btnWhitelistSettings">Whitelist settings</button>
         </div>
 
         <hr>
@@ -120,10 +134,10 @@
                 <tr>
                     <td colspan="2">
                         <div class="header">
-                            <label for="chkbDarkStart">Dark at loading</label>
+                            <label for="chkbDarkStart">Dim at loading</label>
                             <div class="helpTips">
                                 <p>
-                                    When enabled, reduce brightness on loading a new page.
+                                    If enabled, reduce brightness when loading a new page.
                                 </p>
                             </div>
                         </div>
