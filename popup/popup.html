@@ -7,13 +7,25 @@
     </head>
     <body>
         <div class="configGroup">
-            <table>
+            <table id="tblMain">
                 <tr>
-                    <td align="center">
-                        <input type="checkbox" name="whitelist" id="chkWhitelist" />
-                        <label id="lblWhitelist">Exclude</label>
+                    <!--<td width="10%">
+                        <div class="helpTips">
+                            <p>
+                                Shortcut <br/>
+                                Alt+Shift+F - toggle on off <br/>
+                                Alt+Shift+W - toggle whitelist
+                            </p>
+                        </div>    
+                    </td>-->
+                    <td width="70%">
+                        <div id="whitelistCol">
+                            <input type="checkbox" name="whitelist" id="chkWhitelist" />
+                            <label id="lblWhitelist">Exclude</label>
+                            <input type="image" src="../imgs/setting.svg" id="btnWhitelistSetting" />
+                        </div>
                     </td>
-                    <td>
+                    <td width="30%">
                         <div class="onoffswitch">
                             <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="chkbOnOff" checked />
                             <label class="onoffswitch-label" for="chkbOnOff">
@@ -26,10 +38,10 @@
             </table>
         </div>
 
-        <hr>
+        <!--<hr>
         <div class="configGroup">
             <button id="btnWhitelistSettings">Whitelist settings</button>
-        </div>
+        </div>-->
 
         <hr>
         <div class="configGroup">

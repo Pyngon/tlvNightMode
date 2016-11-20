@@ -23,6 +23,21 @@
         "<all_urls>"
     ],
 
+    "commands": {
+        "toggle-onoff": {
+            "suggested_key": {
+                "default": "Alt+Shift+F"
+            },
+            "description": "Toggle TLV on off."
+        }, 
+        "toggle-whitelist": {
+            "suggested_key": {
+                "default": "Alt+Shift+W"
+            },
+            "description": "Add/Remove the current site from whitelist."
+        }
+    },
+
     "background": {
         "scripts": ["background.js"]
     },

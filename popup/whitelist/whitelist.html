@@ -14,8 +14,7 @@
                 <h2>Options</h2>
                 <div class="helpTips">
                     <p>
-                        Select whether TLV color themes should be applied to 
-                        web sites in this list only or web sites not in this list.
+                        Select whether TLV color themes should exclude or include whitelisted website.
                     </p>
                 </div>
             </div>
@@ -29,9 +28,21 @@
         
         <hr>
         <div class="configGroup">
-            <div>
-                <table id="tblWhitelist">
-                </table>
+            <div class="header">
+                <h2>Whitelisted Host</h2>
+                <div class="helpTips">
+                    <p>
+                        Manage your whitelist here. 
+                    </p>
+                </div>
+            </div>
+            <div id="divWhitelist">
+                <div id="divWhitelistTable">
+                    <table id="tblWhitelist"></table>
+                </div>
+                <div id="divWhitelistButton">
+                    <button id="btnDeleteAll">Delete All</button>
+                </div>
             </div>
         </div>
         

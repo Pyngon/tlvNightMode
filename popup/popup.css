@@ -90,17 +90,27 @@ button:hover {
 	top: -12px;
 }
 
-#chkWhitelist, #lblWhitelist {
+#tblMain {
+   width: 100%; 
+}
+
+#chkWhitelist, #lblWhitelist, #btnWhitelistSetting {
     vertical-align: middle;
+    margin-right: 5px;
 }
 
 #lblWhitelist {
     font-size: 1.2em;
 }
 
-.onoffswitch {
-    left: 100px;
+#btnWhitelistSetting {
+    width: 20px;
+    height: 20px;
 }
+
+/*.onoffswitch {
+    left: 80px;
+}*/
 
 .horizontalMenu {
     position: relative;

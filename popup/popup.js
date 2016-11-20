@@ -61,13 +61,11 @@ document.addEventListener("DOMContentLoaded", function() {
 
             if(!ev.target.checked && result[bgPage.KEY_ENABLED] != 0) {
                 bgPage.saveValue(bgPage.KEY_ENABLED, 0);
-                // sendMessageToAllContentScript("isEnable", false);
-                sendMessageToAllContentScript({action: "changeColor"});
             } else if(ev.target.checked && result[bgPage.KEY_ENABLED] == 0) {
                 bgPage.saveValue(bgPage.KEY_ENABLED, 1);
-                // sendMessageToAllContentScript("isEnable", true);
-                sendMessageToAllContentScript({action: "changeColor"});
             }
+
+            sendMessageToAllContentScript({action: "changeColor"});
         });
     });
 
@@ -93,19 +91,20 @@ document.addEventListener("DOMContentLoaded", function() {
             } else {
                 bgPage.deleteFromWhitelist(url);
             }
+            sendMessageToActiveContentScript({action: "changeColor"});
 
-            if((ev.target.checked && bgPage.values[bgPage.KEY_WHITELIST_OPTIONS] == 1)
-                || (!ev.target.checked && bgPage.values[bgPage.KEY_WHITELIST_OPTIONS] == 0)) {
-                sendMessageToActiveContentScript({action: "changeColor"});
-            } else {
-                sendMessageToActiveContentScript({action: "changeColor"});
-            }
+            // if((ev.target.checked && bgPage.values[bgPage.KEY_WHITELIST_OPTIONS] == 1)
+            //     || (!ev.target.checked && bgPage.values[bgPage.KEY_WHITELIST_OPTIONS] == 0)) {
+            //     sendMessageToActiveContentScript({action: "changeColor"});
+            // } else {
+            //     sendMessageToActiveContentScript({action: "changeColor"});
+            // }
 
         });
     });
 
-    var btnWhitelistSettings = document.getElementById("btnWhitelistSettings");
-    btnWhitelistSettings.addEventListener("click", function(ev) {
+    var btnWhitelistSetting = document.getElementById("btnWhitelistSetting");
+    btnWhitelistSetting.addEventListener("click", function(ev) {
         window.location.href = "./whitelist/whitelist.html";
     });
 
@@ -231,7 +230,6 @@ function sendMessageToAllContentScript(obj){
 
 function sendMessageToActiveContentScript(obj) {
     chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-        console.log(tabs);
         for(var i=0;i<tabs.length;i++) {
             // var obj = {};
             // obj[key] = value;

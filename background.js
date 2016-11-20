@@ -146,6 +146,13 @@ function deleteFromWhitelist(url) {
     }
 }
 
+function deleteAllWhitelist() {
+    whitelist = {};
+    var obj = {};
+    obj[KEY_WHITELIST] = whitelist;
+    chrome.storage.local.set(obj);
+}
+
 function getHostFromUrl(url) {
     if(url) {
         var hostRegex = /:\/\/([^\/?]+)/g;
@@ -267,6 +274,21 @@ function insertImageConfigToAll(){
     }, 2000);
 }
 
+function sendMessageToAllContentScript(obj){
+    chrome.tabs.query({status: "complete"}, function(tabs){
+        if(DEBUG) console.log("tabs.length=" + tabs.length);
+        for(var i=0;i<tabs.length;i++) {
+            sendMessageToTab(tabs[i], obj);
+        }
+    });
+}
+
+function sendMessageToTab(tab, message) {
+    chrome.tabs.sendMessage(tab.id, message, function(response){
+        if(DEBUG) console.log("send message bg.js to content script completed.");
+    });
+}
+
 /* Load pre defined themes. */
 var xhr = new XMLHttpRequest();
 xhr.onreadystatechange = function() {
@@ -315,5 +337,33 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
     if (request.action == "isChangeColor") {
         var isChange = isChangeColor(sender.tab.url);
         sendResponse({data: isChange});
+    }
+});
+
+chrome.commands.onCommand.addListener(function(command) {
+    console.log('Command:', command);
+    if(command == "toggle-onoff") {
+
+        if(values[KEY_ENABLED] == 1) {
+            saveValue(KEY_ENABLED, 0);
+        } else {
+            saveValue(KEY_ENABLED, 1);
+        }
+        sendMessageToAllContentScript({action: "changeColor"});
+
+    } else if(command == "toggle-whitelist") {
+        chrome.tabs.query({currentWindow: true, active: true}, function(tabs) {
+            for(var i=0;i<tabs.length;i++) {
+                if(isInWhitelist(tabs[i].url)){
+                    deleteFromWhitelist(tabs[i].url);
+                } else {
+                    addWhitelist(tabs[i].url);
+                }
+
+                chrome.tabs.sendMessage(tabs[i].id, {action: "changeColor"}, function(response){
+                    if(DEBUG) console.log("send message bg page to content script completed.");
+                });
+            }
+        });
     }
 });
