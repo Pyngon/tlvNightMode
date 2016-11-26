@@ -274,6 +274,9 @@ function insertImageConfigToAll(){
     }, 2000);
 }
 
+/**
+ * Send message to content scripts in all tabs.
+ */
 function sendMessageToAllContentScript(obj){
     chrome.tabs.query({status: "complete"}, function(tabs){
         if(DEBUG) console.log("tabs.length=" + tabs.length);
@@ -359,11 +362,11 @@ chrome.commands.onCommand.addListener(function(command) {
                 } else {
                     addWhitelist(tabs[i].url);
                 }
-
-                chrome.tabs.sendMessage(tabs[i].id, {action: "changeColor"}, function(response){
-                    if(DEBUG) console.log("send message bg page to content script completed.");
-                });
+                // chrome.tabs.sendMessage(tabs[i].id, {action: "changeColor"}, function(response){
+                //     if(DEBUG) console.log("send message bg page to content script completed.");
+                // });
             }
+            sendMessageToAllContentScript({action: "changeColor"});
         });
     }
 });

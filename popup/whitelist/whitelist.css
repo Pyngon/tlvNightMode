@@ -1,3 +1,7 @@
+body {
+    min-height: 200px;
+}
+
 #divWhitelistOptions {
     margin: 5px;
 }
@@ -30,7 +34,7 @@
 
 #divWhitelistTable {
     max-height: 200px;
-    overflow-y: scroll;
+    overflow-y: auto;
     padding: 5px;
     background-color: rgb(25, 30, 38);
     border-radius: 5px;
@@ -48,4 +52,34 @@
 .actionImageBtn {
     width: 20px;
     height: 20px;
+}
+
+.dialogConfirm {
+    position: absolute;
+    background-color: rgba(40,40,40,0.5);
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+    display:none;
+}
+
+.dialogContent {
+    position: absolute;
+    width: 120px;
+    height: 90px;
+    margin: auto;
+    top:0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgb(25, 30, 38);
+    border: 1px solid #ABB2BF;
+    border-radius: 5px;
+    text-align: center;
+    font-size: 1.2em;
+}
+
+.dialogContent button {
+    width: 50px;
 }

@@ -15,7 +15,7 @@ document.addEventListener("DOMContentLoaded", function(){
 
     var btnBack = document.getElementById("btnBack");
     btnBack.addEventListener("click", function(ev){
-        window.location.href = "./popup.html";
+        window.location.href = "../popup.html";
     });
 
     var btnSave = document.getElementById("btnSave");
@@ -35,7 +35,7 @@ document.addEventListener("DOMContentLoaded", function(){
             bgPage.addTheme(obj);
         }
 
-        window.location.href = "./popup.html";
+        window.location.href = "../popup.html";
     });
 
     //console.log("location.search=" + window.location.search);

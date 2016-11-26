@@ -6,166 +6,154 @@
         <script type="text/javascript" src="popup.js"></script>
     </head>
     <body>
-        <div class="configGroup">
-            <table id="tblMain">
-                <tr>
-                    <!--<td width="10%">
-                        <div class="helpTips">
-                            <p>
-                                Shortcut <br/>
-                                Alt+Shift+F - toggle on off <br/>
-                                Alt+Shift+W - toggle whitelist
-                            </p>
-                        </div>    
-                    </td>-->
-                    <td width="70%">
-                        <div id="whitelistCol">
-                            <input type="checkbox" name="whitelist" id="chkWhitelist" />
-                            <label id="lblWhitelist">Exclude</label>
-                            <input type="image" src="../imgs/setting.svg" id="btnWhitelistSetting" />
-                        </div>
-                    </td>
-                    <td width="30%">
-                        <div class="onoffswitch">
-                            <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="chkbOnOff" checked />
-                            <label class="onoffswitch-label" for="chkbOnOff">
-                                <span class="onoffswitch-inner"></span>
-                                <span class="onoffswitch-switch"></span>
-                            </label>
-                        </div>
-                    </td>
-                </tr>
-            </table>
-        </div>
+        <div class="allContent">
+            <div class="configGroup">
+                <table id="tblMain">
+                    <tr>
+                        <td width="70%">
+                            <div id="whitelistCol">
+                                <input type="checkbox" name="whitelist" id="chkWhitelist" />
+                                <label id="lblWhitelist" title="Shortcut: Alt+Shift+W">Exclude</label>
+                                <input type="image" src="../imgs/setting.svg" id="btnWhitelistSetting" />
+                            </div>
+                        </td>
+                        <td width="30%">
+                            <div class="onoffswitch" title="Shortcut: Alt+Shift+F">
+                                <input type="checkbox" name="onoffswitch" class="onoffswitch-checkbox" id="chkbOnOff" checked />
+                                <label class="onoffswitch-label" for="chkbOnOff">
+                                    <span class="onoffswitch-inner"></span>
+                                    <span class="onoffswitch-switch"></span>
+                                </label>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
-        <!--<hr>
-        <div class="configGroup">
-            <button id="btnWhitelistSettings">Whitelist settings</button>
-        </div>-->
-
-        <hr>
-        <div class="configGroup">
-            <div class="header">
-                <h2>Color Themes</h2>
-                <div class="helpTips">
-                    <p>
-                        Select your theme <br/>
-                        T - Text color <br/>
-                        L - Link color <br/>
-                        V - Visited link color
-                    </p>
+            <hr>
+            <div class="configGroup">
+                <div class="header">
+                    <h2>Color Themes</h2>
+                    <div class="helpTips helpTips_down">
+                        <p>
+                            Select your theme <br/>
+                            T - Text color <br/>
+                            L - Link color <br/>
+                            V - Visited link color
+                        </p>
+                    </div>
                 </div>
-            </div>
-            <div>
-                <ul id="menuTheme" class="horizontalMenu"></ul>
-            </div>
-            <div class="header">
-                <h3>Your Themes</h3>
-                <div class="helpTips">
-                    <p>
-                        You can customized your own theme. Right click to edit or delele the theme.
-                    </p>
+                <div>
+                    <ul id="menuTheme" class="horizontalMenu"></ul>
                 </div>
+                <div class="header">
+                    <h3>Your Themes</h3>
+                    <div class="helpTips helpTips_down">
+                        <p>
+                            You can customized your own theme. Right click to edit or delele the theme.
+                        </p>
+                    </div>
 
+                </div>
+                <div class="content">
+                    <ul id="menuCustomTheme" class="horizontalMenu"></ul>
+                </div>
+                <button id="btnCreateTheme">Create New Theme</button>
             </div>
-            <div class="content">
-                <ul id="menuCustomTheme" class="horizontalMenu"></ul>
+
+            <hr>
+            <div class="configGroup">
+                <h2>Image</h2>
+                <table>
+                    <tr>
+                        <td>
+                            <label for="txtBrightness">Brightness</label>
+                        </td>
+                        <td>
+                            <input type="range" id="sbBrightness" min="0" max="200" value="100" />
+                        </td>
+                        <td>
+                            <input type="text" id="txtBrightness" class="rangeValue" value="100"></input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="txtContrast">Contrast</label>
+                        </td>
+                        <td>
+                            <input type="range" id="sbContrast" min="0" max="200" value="100" />
+                        </td>
+                        <td>
+                            <input type="text" id="txtContrast" class="rangeValue" value="100"></input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="header">
+                                <label for="chkbDarkStart">Hide background image</label>
+                                <div class="helpTips helpTips_up">
+                                    <p>
+                                        Some website contains a big background image with bright color. <br/>
+                                        Enable this setting to hide the background image.
+                                    </p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="checkbox" id="chkbHideBgImage" checked />
+                        </td>
+                    </tr>
+                </table>
             </div>
-            <button id="btnCreateTheme">Create New Theme</button>
-        </div>
 
-        <hr>
-        <div class="configGroup">
-            <h2>Image</h2>
-            <table>
-                <tr>
-                    <td>
-                        <label for="txtBrightness">Brightness</label>
-                    </td>
-                    <td>
-                        <input type="range" id="sbBrightness" min="0" max="200" value="100" />
-                    </td>
-                    <td>
-                        <input type="text" id="txtBrightness" class="rangeValue" value="100"></input>
-                    </td>
-                </tr>
-                <tr>
-                    <td>
-                        <label for="txtContrast">Contrast</label>
-                    </td>
-                    <td>
-                        <input type="range" id="sbContrast" min="0" max="200" value="100" />
-                    </td>
-                    <td>
-                        <input type="text" id="txtContrast" class="rangeValue" value="100"></input>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <div class="header">
-                            <label for="chkbDarkStart">Hide background image</label>
-                            <div class="helpTips">
-                                <p>
-                                    Some website contains a big background image with bright color. <br/>
-                                    Enable this setting to hide the background image.
-                                </p>
+            <hr>
+            <a id="linkAdvance" href=#"">Show Advance Settings</a>
+            <div class="configGroup" id="blockAdvance" style="display:none;">
+                <h2>Advance</h2>
+                <table>
+                    <tr>
+                        <td>
+                            <div class="header">
+                                <label for="txtDepth">Depth</label>
+                                <div class="helpTips helpTips_up">
+                                    <p>
+                                        Bigger number may have better effect but will be slower.<br/>
+                                        Have to reload the page to take effect after changes.
+                                    </p>
+                                </div>
                             </div>
-                        </div>
-                    </td>
-                    <td>
-                        <input type="checkbox" id="chkbHideBgImage" checked />
-                    </td>
-                </tr>
-            </table>
-        </div>
+                        </td>
+                        <td>
+                            <input type="range" id="sbDepth" min="0" max="100" value="20" />
+                        </td>
+                        <td>
+                            <input type="text" id="txtDepth" class="rangeValue" value="20"></input>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2">
+                            <div class="header">
+                                <label for="chkbDarkStart">Dim at loading</label>
+                                <div class="helpTips helpTips_up">
+                                    <p>
+                                        If enabled, reduce brightness when loading a new page.
+                                    </p>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            <input type="checkbox" id="chkbDarkStart" checked />
+                        </td>
+                    </tr>
+                </table>
+            </div>
 
-        <hr>
-        <a id="linkAdvance" href=#"">Show Advance Settings</a>
-        <div class="configGroup" id="blockAdvance" style="display:none;">
-            <h2>Advance</h2>
-            <table>
-                <tr>
-                    <td>
-                        <div class="header">
-                            <label for="txtDepth">Depth</label>
-                            <div class="helpTips">
-                                <p>
-                                    Bigger number may have better effect but will be slower.<br/>
-                                    Have to reload the page to take effect after changes.
-                                </p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <input type="range" id="sbDepth" min="0" max="100" value="20" />
-                    </td>
-                    <td>
-                        <input type="text" id="txtDepth" class="rangeValue" value="20"></input>
-                    </td>
-                </tr>
-                <tr>
-                    <td colspan="2">
-                        <div class="header">
-                            <label for="chkbDarkStart">Dim at loading</label>
-                            <div class="helpTips">
-                                <p>
-                                    If enabled, reduce brightness when loading a new page.
-                                </p>
-                            </div>
-                        </div>
-                    </td>
-                    <td>
-                        <input type="checkbox" id="chkbDarkStart" checked />
-                    </td>
-                </tr>
-            </table>
-        </div>
-
-        <div id="customThemeRightClick" class="contextMenu">
-            <ul>
-                <li id="customThemeEdit">Edit</li>
-                <li id="customThemeDelete">Delete</li>
-            </ul>
+            <div id="customThemeRightClick" class="contextMenu">
+                <ul>
+                    <li id="customThemeEdit">Edit</li>
+                    <li id="customThemeDelete">Delete</li>
+                </ul>
+            </div>
         </div>
     </body>
 </html>

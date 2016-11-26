@@ -16,12 +16,14 @@ document.addEventListener("DOMContentLoaded", function() {
         if(DEBUG) console.log("radExclude change");
         if(ev.target.checked) {
             bgPage.saveValue(bgPage.KEY_WHITELIST_OPTIONS, ev.target.value);
+            bgPage.sendMessageToAllContentScript({action: "changeColor"});
         }
     });
     radInclude.addEventListener("change", function(ev) {
         if(DEBUG) console.log("radInclude change");
         if(ev.target.checked) {
             bgPage.saveValue(bgPage.KEY_WHITELIST_OPTIONS, ev.target.value);
+            bgPage.sendMessageToAllContentScript({action: "changeColor"});
         }
     });
 
@@ -71,13 +73,32 @@ document.addEventListener("DOMContentLoaded", function() {
     /* init action button */
     var btnDeleteAll = document.getElementById('btnDeleteAll');
     btnDeleteAll.addEventListener('click', function(ev) {
-        bgPage.deleteAllWhitelist();
-        for(var i = tblWhitelist.rows.length - 1; i >= 0; i--) {
-            tblWhitelist.deleteRow(i);
-        }
-        divWhitelist.style.display = "none";
+        var deleteAllDialog = document.getElementById('deleteAllDialog');
+        deleteAllDialog.style.display = "block";
+        var btnYes = deleteAllDialog.getElementsByClassName('btnYes')[0];
+        btnYes.addEventListener('click',function(ev) {
+            onDeleteAllClick(ev);
+            deleteAllDialog.style.display = "none";
+        });
+
+        var btnNo = deleteAllDialog.getElementsByClassName('btnNo')[0];
+        btnNo.addEventListener('click', function(ev) {
+            deleteAllDialog.style.display = "none";
+        });
+
     });
 });
+
+function onDeleteAllClick(ev) {
+    bgPage.deleteAllWhitelist();
+    var divWhitelist = document.getElementById('divWhitelist');
+    var tblWhitelist = document.getElementById('tblWhitelist');
+    for(var i = tblWhitelist.rows.length - 1; i >= 0; i--) {
+        tblWhitelist.deleteRow(i);
+    }
+    divWhitelist.style.display = "none";
+    bgPage.sendMessageToAllContentScript({action: "changeColor"});
+}
 
 function onBtnDeleteClick(ev) {
     var host = ev.target.value;
@@ -91,4 +112,5 @@ function onBtnDeleteClick(ev) {
         var divWhitelist = document.getElementById('divWhitelist');
         divWhitelist.style.display = "none";
     }
+    bgPage.sendMessageToAllContentScript({action: "changeColor"});
 }

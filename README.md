@@ -11,7 +11,3 @@ Install from [Chrome Web Store] (https://chrome.google.com/webstore/detail/tlv-n
 3. Able to create customized theme with your favorite colors.
 4. Adjust image brightness and contrast.
 
-## Next step
-1. Able to use different theme and setting for different website.
-2. Able to adjust brightness of the whole page
-3. Support Firefox

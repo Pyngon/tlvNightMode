@@ -25,14 +25,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var btnCreateTheme = document.getElementById("btnCreateTheme");
     btnCreateTheme.addEventListener("click", function(ev){
-        window.location.href = "./createTheme.html";
+        window.location.href = "./createTheme/createTheme.html";
     });
 
     var customEdit = document.getElementById("customThemeEdit");
     customEdit.addEventListener("click", function(ev){
         console.log("customEdit");
         if(contextMenuId && contextMenuId.length > 0){
-            window.location.href = "./createTheme.html?id=" + contextMenuId;
+            window.location.href = "./createTheme/createTheme.html?id=" + contextMenuId;
         }
     });
 
@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 bgPage.saveValue(bgPage.KEY_ENABLED, 1);
             }
 
-            sendMessageToAllContentScript({action: "changeColor"});
+            bgPage.sendMessageToAllContentScript({action: "changeColor"});
         });
     });
 
@@ -91,15 +91,7 @@ document.addEventListener("DOMContentLoaded", function() {
             } else {
                 bgPage.deleteFromWhitelist(url);
             }
-            sendMessageToActiveContentScript({action: "changeColor"});
-
-            // if((ev.target.checked && bgPage.values[bgPage.KEY_WHITELIST_OPTIONS] == 1)
-            //     || (!ev.target.checked && bgPage.values[bgPage.KEY_WHITELIST_OPTIONS] == 0)) {
-            //     sendMessageToActiveContentScript({action: "changeColor"});
-            // } else {
-            //     sendMessageToActiveContentScript({action: "changeColor"});
-            // }
-
+            bgPage.sendMessageToAllContentScript({action: "changeColor"});
         });
     });
 
@@ -169,11 +161,11 @@ document.addEventListener("DOMContentLoaded", function() {
         if(ev.target.checked) {
             bgPage.saveValue(bgPage.KEY_HIDE_BGIAMGE, 1);
             // sendMessageToAllContentScript("isHideBgImage", true);
-            sendMessageToAllContentScript({action: "hideBgImage", data: true});
+            bgPage.sendMessageToAllContentScript({action: "hideBgImage", data: true});
         } else {
             bgPage.saveValue(bgPage.KEY_HIDE_BGIAMGE, 0);
             // sendMessageToAllContentScript("isHideBgImage", false);
-            sendMessageToAllContentScript({action: "hideBgImage", data: false});
+            bgPage.sendMessageToAllContentScript({action: "hideBgImage", data: false});
         }
     });
 
@@ -200,50 +192,7 @@ function getActiveTabUrl(callback) {
     chrome.tabs.query({currentWindow:true, active: true}, function(tabs) {
         if(tabs != null && tabs.length > 0) {
             callback(tabs[0].url);
-            // var hostRegex = /:\/\/([^\/?]+)/g;
-            // var matches = hostRegex.exec(tabs[0].url);
-            // if(matches != null && matches.length > 1) {
-            //     if(DEBUG) console.log("host=" + matches[1]);
-            //     callback(matches[1]);
-            // }
         }
-        //callback(null);
-    });
-}
-
-/**
- * Send message to content scripts in all tabs when turning on or off this extension.
- */
-function sendMessageToAllContentScript(obj){
-    chrome.tabs.query({status: "complete"}, function(tabs){
-        if(DEBUG) console.log("tabs.length=" + tabs.length);
-        for(var i=0;i<tabs.length;i++) {
-            // var obj = {};
-            // obj[key] = value;
-            // chrome.tabs.sendMessage(tabs[i].id, obj, function(response){
-            //     if(DEBUG) console.log("contentScript is done.");
-            // });
-            sendMessageToTab(tabs[i], obj);
-        }
-    });
-}
-
-function sendMessageToActiveContentScript(obj) {
-    chrome.tabs.query({currentWindow: true, active: true}, function(tabs){
-        for(var i=0;i<tabs.length;i++) {
-            // var obj = {};
-            // obj[key] = value;
-            // chrome.tabs.sendMessage(tabs[i].id, obj, function(response){
-            //     console.log("contentScript is done.");
-            // });
-            sendMessageToTab(tabs[i], obj);
-        }
-    });
-}
-
-function sendMessageToTab(tab, message) {
-    chrome.tabs.sendMessage(tab.id, message, function(response){
-        if(DEBUG) console.log("send message to content script completed.");
     });
 }
 
