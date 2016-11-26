@@ -1,4 +1,5 @@
 var bgPage = chrome.extension.getBackgroundPage();
+var DEBUG = bgPage.DEBUG;
 var colorBg, colorText, colorBorder, colorLink, colorVisitedLink;
 var txtName;
 var editId;
@@ -10,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function(){
         editId = null;
     }
 
-    console.log("editId=" + editId);
+    if(DEBUG) console.log("editId=" + editId);
     initColor();
 
     var btnBack = document.getElementById("btnBack");

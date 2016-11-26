@@ -1,4 +1,4 @@
-var DEBUG = true;
+var DEBUG = false;
 
 var KEY_ENABLED = "isEnabled";
 var KEY_THEME_ID = "theme";
@@ -324,7 +324,7 @@ chrome.tabs.onUpdated.addListener(function(tabsId, changeInfo, tab) {
         console.log(changeInfo);
     } 
     //if(changeInfo.url && tab.url && !tab.url.startsWith("chrome://")){
-    if(changeInfo.status && changeInfo.status == "loading") {
+    if(changeInfo.status && changeInfo.status == "loading" && (!tab.url.startsWith("chrome://") || tab.url.startsWith("chrome://newtab"))) {
         if(DEBUG) console.log("tabs.onUpdated do insert");
         insertCSS(tabsId, getTheme(currentThemeID));
         insertImageConfig(tabsId);
@@ -344,7 +344,7 @@ chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
 });
 
 chrome.commands.onCommand.addListener(function(command) {
-    console.log('Command:', command);
+    if(DEBUG) console.log('Command:', command);
     if(command == "toggle-onoff") {
 
         if(values[KEY_ENABLED] == 1) {

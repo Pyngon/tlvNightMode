@@ -1,5 +1,5 @@
 var pyngon = pyngon || {};
-pyngon.DEBUG = true;
+pyngon.DEBUG = false;
 
 if(!pyngon.tlvCS){
 
@@ -147,7 +147,7 @@ if(!pyngon.tlvCS){
             // Otherwise throw an exception to make debugging easier
             else {
 				//throw Error(color + ' is not supported by $.parseColor');
-				console.log("parseColor fail color=" + color);
+				 if(pyngon.DEBUG) console.log("parseColor fail color=" + color);
 				return null;
 			}
 

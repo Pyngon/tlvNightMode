@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function() {
     /* init custom themes */
     var customThemesMenu = document.getElementById("menuCustomTheme");
     for(var i in bgPage.customThemes) {
-        console.log("custom Theme=" + i + ", bgColor=" + bgPage.customThemes[i].bgColor);
+        if(DEBUG) console.log("custom Theme=" + i + ", bgColor=" + bgPage.customThemes[i].bgColor);
         item = renderThemeButton(i, bgPage.customThemes[i]);
         item.addEventListener("contextmenu", customThemeRightClick);
         customThemesMenu.appendChild(item);
@@ -30,7 +30,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var customEdit = document.getElementById("customThemeEdit");
     customEdit.addEventListener("click", function(ev){
-        console.log("customEdit");
+        if(DEBUG) console.log("customEdit");
         if(contextMenuId && contextMenuId.length > 0){
             window.location.href = "./createTheme/createTheme.html?id=" + contextMenuId;
         }
@@ -38,7 +38,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var customDelete = document.getElementById("customThemeDelete");
     customDelete.addEventListener("click", function(ev){
-        console.log("customDelete");
+        if(DEBUG) console.log("customDelete");
         if(contextMenuId && contextMenuId.length > 0){
             var menuCustomTheme = document.getElementById("menuCustomTheme");
             var menuItem = document.getElementById(contextMenuId);
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     chkbOnOff.addEventListener("change", function(ev){
         chrome.storage.local.get(bgPage.KEY_ENABLED, function(result) {
-            console.log("local.get=" + result[bgPage.KEY_ENABLED]);
+            if(DEBUG) console.log("local.get=" + result[bgPage.KEY_ENABLED]);
 
             if(!ev.target.checked && result[bgPage.KEY_ENABLED] != 0) {
                 bgPage.saveValue(bgPage.KEY_ENABLED, 0);
@@ -171,7 +171,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     var linkAdvance = document.getElementById("linkAdvance");
     linkAdvance.addEventListener("click", function(ev){
-        console.log(ev.target.innerText);
+        if(DEBUG) console.log(ev.target.innerText);
         var blockAdvance = document.getElementById("blockAdvance");
         if(blockAdvance.style.display == "none"){
             blockAdvance.style.display = "block";
@@ -296,15 +296,15 @@ function renderThemeButton(id, theme){
  * @param ev - click event
  */
 function changeTheme(ev){
-    console.log("changeTheme target=" + this);
-    console.log("changeTheme=" + this.id);
+    if(DEBUG) console.log("changeTheme target=" + this);
+    if(DEBUG) console.log("changeTheme=" + this.id);
     bgPage.saveValue(bgPage.KEY_THEME_ID, this.id);
     bgPage.currentThemeID = this.id;
 
     chrome.tabs.query({status: "complete"}, function(tabs){
-        console.log("changeTheme tabs.length=" + tabs.length);
+        if(DEBUG) console.log("changeTheme tabs.length=" + tabs.length);
         for(var i=0;i<tabs.length;i++) {
-            if(!tabs[i].url.startsWith("chrome://")){
+            if(!tabs[i].url.startsWith("chrome://") || tabs[i].url.startsWith("chrome://newtab")){
                 bgPage.insertCSS(tabs[i].id, bgPage.getTheme(bgPage.currentThemeID));
             }
         }
@@ -316,7 +316,7 @@ function changeTheme(ev){
  * User can delete or edit the theme from this context menu.
  */
 function customThemeRightClick(ev){
-    console.log("capture right click x=" + ev.clientX + " y=" + ev.clientY);
+    if(DEBUG) console.log("capture right click x=" + ev.clientX + " y=" + ev.clientY);
     ev.preventDefault();
 
     var menu = document.getElementById("customThemeRightClick");
