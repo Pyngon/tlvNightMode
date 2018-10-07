@@ -3,7 +3,7 @@ A chrome extension that convert all website to dark color scheme.
 It is useful for those who get tired staring at web pages with bright color scheme for long hours.
 
 ## Installation
-Install from [Chrome Web Store] (https://chrome.google.com/webstore/detail/tlv-night-mode/jdkclpamgobjdopkemcojdhbfddoplgg)
+Install from [Chrome Web Store] (https://tinyurl.com/y9dafmus)
 
 ## Features
 1. Does not use inverted color.

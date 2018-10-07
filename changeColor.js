@@ -36,7 +36,6 @@ if(!pyngon.tlvCS){
             if(maxDepth && maxDepth > 0 && depth > maxDepth){
                 return;
             }
-            // if(node && (!node.className || (!node.className.includes("noBgColor") && !node.className.includes("withBgColor") && !node.className.includes("withBgImage")))) {
 
             if(node.nodeType == Node.ELEMENT_NODE){
                 tagElement(node);
@@ -47,19 +46,21 @@ if(!pyngon.tlvCS){
                     analyzeAndModifyNode(childNodes[i], checkChild, depth+1);
                 }
             }
-
-            // }
         };
 
         function tagElement(node){
             if(node instanceof SVGElement){
                 return;
             }
-            if(pyngon.DEBUG) console.log("tagElement tag=" + node.tagName + ", class=" + node.className + ", id=" + node.id);
+            if(pyngon.DEBUG) {
+                console.log("tagElement tag=" + node.tagName + ", class=" + 
+                    node.className + ", id=" + node.id);
+            }
 
             var computedStyle = window.getComputedStyle(node);
 
-            if(node.offsetWidth/window.innerWidth > 0.6 && node.offsetHeight/window.innerHeight > 0.6){
+            if(node.offsetWidth/window.innerWidth > 0.6 
+                && node.offsetHeight/window.innerHeight > 0.6){
                 if(!node.className || !node.className.includes("fullscreenBgImage")){
                     node.className += " fullscreenBgImage";
                 }
@@ -88,7 +89,6 @@ if(!pyngon.tlvCS){
 
         function backToNormalBrightness(){
             if(document.documentElement.className.includes("tlvNightModeOn")){
-                // document.documentElement.style.color = originalColor;
                 var brightenInterval = setInterval(function(){
                     var filter = document.documentElement.style.webkitFilter;
                     var brightness = /^brightness\(([\d]+)%\)/.exec(filter);
@@ -215,20 +215,6 @@ if(!pyngon.tlvCS){
 
 }
 
-// chrome.storage.local.get("isEnabled", function(result){
-//     if(pyngon.DEBUG) console.log("local.get=" + result["isEnabled"]);
-//     if(result["isEnabled"] != 0) {
-//         chrome.runtime.sendMessage({action: "isChangeColor"}, function(response) {
-//             if(response.data == true) {
-//                 if(!document.documentElement.className.includes("tlvNightModeOn")){
-//                     document.documentElement.className += " tlvNightModeOn";
-//                 }
-//                 pyngon.tlvCS.run();
-//             }
-//         });
-//     }
-// });
-
 chrome.runtime.sendMessage({action: "isChangeColor"}, function(response) {
     if(response.data == true) {
         if(!document.documentElement.className.includes("tlvNightModeOn")){
@@ -244,28 +230,8 @@ chrome.runtime.onMessage.addListener(
             console.log("received request");
             console.log(request);
         } 
-        // if(request.isEnable != undefined){
-        //     if (request.isEnable) {
-        //         pyngon.tlvCS.enable();
-        //     } else {
-        //         pyngon.tlvCS.disable();
-        //     }
-        // }
 
-        // if(request.isHideBgImage != undefined){
-        //     if (request.isHideBgImage) {
-        //         pyngon.tlvCS.hideBgImage();
-        //     } else {
-        //         pyngon.tlvCS.showBgImage();
-        //     }
-        // }
         if(request.action == "changeColor") {
-
-            // if(request.data == true) {
-            //     pyngon.tlvCS.enable();
-            // } else {
-            //     pyngon.tlvCS.disable();
-            // }
 
             chrome.runtime.sendMessage({action: "isChangeColor"}, function(response) {
                 if(response.data == true) {
@@ -287,5 +253,3 @@ chrome.runtime.onMessage.addListener(
         sendResponse({status: "ok1"});
     }
 );
-
-//pyngon.tlvCS.run();

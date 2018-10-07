@@ -35,22 +35,17 @@ var whitelist = {};
 
 var timerApplyAll;
 
-chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, KEY_THEME_ID, KEY_CUSTOM_THEMES, KEY_DARK_LOADING, KEY_HIDE_BGIAMGE, KEY_WHITELIST, KEY_WHITELIST_OPTIONS], function(result) {
-    // if(result[KEY_ENABLED] != null){
-    //     values[KEY_ENABLED] = result[KEY_ENABLED];
-    // }
-
-    // if(result[KEY_BRIGHTNESS] != null){
-    //     values[KEY_BRIGHTNESS] = result[KEY_BRIGHTNESS];
-    // }
-
-    // if(result[KEY_CONTRAST] != null){
-    //     values[KEY_CONTRAST] = result[KEY_CONTRAST];
-    // }
-
-    // if(result[KEY_DEPTH] != null){
-    //     values[KEY_DEPTH] = result[KEY_DEPTH];
-    // }
+chrome.storage.local.get([
+    KEY_BRIGHTNESS, 
+    KEY_CONTRAST, 
+    KEY_ENABLED, 
+    KEY_DEPTH, 
+    KEY_THEME_ID, 
+    KEY_CUSTOM_THEMES, 
+    KEY_DARK_LOADING, 
+    KEY_HIDE_BGIAMGE, 
+    KEY_WHITELIST, 
+    KEY_WHITELIST_OPTIONS], function(result) {
 
     setValueFromResultIfNotNull(KEY_ENABLED, result);
     setValueFromResultIfNotNull(KEY_BRIGHTNESS, result);
@@ -63,18 +58,6 @@ chrome.storage.local.get([KEY_BRIGHTNESS, KEY_CONTRAST, KEY_ENABLED, KEY_DEPTH, 
         if(DEBUG) console.log(result[KEY_CUSTOM_THEMES]);
         customThemes = JSON.parse(result[KEY_CUSTOM_THEMES]);
     }
-
-    // if(result[KEY_DARK_LOADING] != null){
-    //     values[KEY_DARK_LOADING] = result[KEY_DARK_LOADING];
-    // }
-
-    // if(result[KEY_HIDE_BGIAMGE] != null){
-    //     values[KEY_HIDE_BGIAMGE] = result[KEY_DARK_LOADING];
-    // }
-
-    // if(result[KEY_WHITELIST_OPTIONS] != null) {
-    //     values[KEY_WHITELIST_OPTIONS] = result[KEY_WHITELIST_OPTIONS];
-    // }
 
     setValueFromResultIfNotNull(KEY_DARK_LOADING, result);
     setValueFromResultIfNotNull(KEY_HIDE_BGIAMGE, result);
@@ -246,14 +229,33 @@ function getTheme(themeId) {
 function insertCSS(tabId, theme){
     if(theme != null){
         chrome.tabs.insertCSS(tabId, {
-            code: 'html.tlvNightModeOn, html.tlvNightModeOn > body, html.tlvNightModeOn > body > *, html.tlvNightModeOn *:not([aria-hidden=true]).withBgColor:not(.withBgImage) {background-color: ' + theme.bgColor + ' !important;}html.tlvNightModeOn * {color: ' + theme.textColor + ' !important;border-color: ' + theme.borderColor + ' !important;box-shadow: none !important;}html.tlvNightModeOn ::selection {background: rgba(142,142,142,0.3) !important;}html.tlvNightModeOn a:link {color: ' + theme.linkColor + ' !important;}html.tlvNightModeOn a:visited {color: ' + theme.visitedLinkColor + ' !important;}html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {background-color: rgba(0,0,0,0) !important;}'
+            code: 
+                'html.tlvNightModeOn, html.tlvNightModeOn > body, ' + 
+                'html.tlvNightModeOn > body > *, ' + 
+                'html.tlvNightModeOn *:not([aria-hidden=true]).withBgColor:not(.withBgImage) { ' + 
+                '  background-color: ' + theme.bgColor + ' !important;}' + 
+                'html.tlvNightModeOn * {' +
+                '  color: ' + theme.textColor + ' !important;' + 
+                '  border-color: ' + theme.borderColor + ' !important;' + 
+                '  box-shadow: none !important;}' + 
+                'html.tlvNightModeOn ::selection {' + 
+                '  background: rgba(142,142,142,0.3) !important;}' + 
+                'html.tlvNightModeOn a:link {' + 
+                '  color: ' + theme.linkColor + ' !important;}' + 
+                'html.tlvNightModeOn a:visited {' + 
+                '  color: ' + theme.visitedLinkColor + ' !important;}' + 
+                'html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {' + 
+                '  background-color: rgba(0,0,0,0) !important;}'
         });
     }
 }
 
 function insertImageConfig(tabId){
     chrome.tabs.insertCSS(tabId, {
-        code: 'html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {-webkit-filter: brightness(' + values[KEY_BRIGHTNESS] + '%) contrast(' + values[KEY_CONTRAST] + '%) !important;}'
+        code: 
+            'html.tlvNightModeOn img, html.tlvNightModeOn .withBgImage {' + 
+            '  -webkit-filter: brightness(' + values[KEY_BRIGHTNESS] + '%)' + 
+            '           contrast(' + values[KEY_CONTRAST] + '%) !important;}'
     });
 }
 
@@ -320,16 +322,17 @@ chrome.tabs.query({status: "complete"}, function(tabs){
 
 chrome.tabs.onUpdated.addListener(function(tabsId, changeInfo, tab) {
     if(DEBUG) {
-        console.log("tabs.onUpdated tabsId=" + tabsId + " url=" + tab.url + ", changeInfo.url=" + changeInfo.url);
+        console.log("tabs.onUpdated tabsId=" + tabsId + " url=" + tab.url + 
+            ", changeInfo.url=" + changeInfo.url);
         console.log(changeInfo);
     } 
-    //if(changeInfo.url && tab.url && !tab.url.startsWith("chrome://")){
-    if(changeInfo.status && changeInfo.status == "loading" && (!tab.url.startsWith("chrome://") || tab.url.startsWith("chrome://newtab"))) {
+
+    if(changeInfo.status && changeInfo.status == "loading" 
+        && (!tab.url.startsWith("chrome://") || tab.url.startsWith("chrome://newtab"))) {
         if(DEBUG) console.log("tabs.onUpdated do insert");
         insertCSS(tabsId, getTheme(currentThemeID));
         insertImageConfig(tabsId);
     }
-    //}
 });
 
 chrome.runtime.onMessage.addListener(function(request, sender, sendResponse) {
@@ -362,9 +365,6 @@ chrome.commands.onCommand.addListener(function(command) {
                 } else {
                     addWhitelist(tabs[i].url);
                 }
-                // chrome.tabs.sendMessage(tabs[i].id, {action: "changeColor"}, function(response){
-                //     if(DEBUG) console.log("send message bg page to content script completed.");
-                // });
             }
             sendMessageToAllContentScript({action: "changeColor"});
         });
